@@ -1,7 +1,7 @@
-import Server
-import Parser
-import Interpreter
-import Store
+import Server from server
+import Parser from parser
+import Interpreter from interpreter
+import Store from store
 
 hostname = "localhost"
 port = -1
