@@ -8,36 +8,6 @@ import ply.lex as lex
 
 # Reserved words
 reserved = {
-    '=' : 'EQUAL',
-    '->' : 'ARROW',
-    '{' : 'LCURLYPAREN',
-    '}' : 'RCURLYPAREN',
-    'if' : 'IF',
-    'then' : 'THEN',
-    'else' : 'ELSE',
-    'while' : 'WHILE',
-    'as' : 'AS',
-    'principal' : 'PRINCIPAL',
-    'password' : 'PASSWORD',
-    'do' : 'DO',
-    'exit' : 'EXIT',
-    'return' : 'RETURN',
-    'create' : 'CREATE',
-    'change' : 'CHANGE',
-    'set' : 'SET',
-    'append' : 'APPEND',
-    'to' : 'TO',
-    'with' : 'WITH',
-    'local' : 'LOCAL',
-    'foreach' : 'FOREACH',
-    'in' : 'IN',
-    'replacewith' : 'REPLACEWITH',
-    'delegation' : 'DELEGATION',
-    'default' : 'DEFAULT',
-    'delegator' : 'DELEGATOR',
-    'read' : 'READ',
-    'write' : 'WRITE',
-    'delete' : 'DELETE'
     '=': 'EQUAL',
     '->': 'ARROW',
     'if': 'IF',
@@ -81,14 +51,6 @@ tokens = [
              'STRING'] + list(reserved.values())
 
 # Regular expression rules for simple tokens
-t_PLUS    = r'\+'
-t_MINUS   = r'-'
-t_TIMES   = r'\*'
-t_DIVIDE  = r'/'
-t_LPAREN  = r'\('
-t_LCURLYPAREN = r'\{'
-t_RCURLYPAREN = r'\}'
-t_RPAREN  = r'\)'
 t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
@@ -133,17 +95,18 @@ def t_ID(t):
     t.type = reserved.get(t.value, 'ID')  # Check for reserved words
     return t
 
-def t_STRING(t):
-    r'\"[a-zA-Z_][a-zA-Z0-9]*\"'
-    t.type = "STRING"
-    t.value = t.value[1:-1]
-    return t
-
 
 # Define a rule so we can track line numbers
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
+
+
+def t_STRING(t):
+    r'\"[a-zA-Z_][a-zA-Z0-9]*\"'
+    t.type = "STRING"
+    t.value = t.value[1:-1]
+    return t
 
 
 # A string containing ignored characters (spaces and tabs)
@@ -163,7 +126,6 @@ lexer = lex.lex()
 def main():
     # Test it out
     data = '''
-    as principal admin password {u} do ->
     as principal admin "password" u do ->
     exit
     '''
