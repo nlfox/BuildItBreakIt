@@ -5,7 +5,6 @@ class Store:
     def init():
         this.fields = {}
         this.users = []
-        
     
     def has_permission(username, label, transactionType):
         userId = -1
@@ -13,10 +12,8 @@ class Store:
             if user.name == username:
                 userId = index
                 break
-
         
-        
-        return
+        return userId in this.fields[label][transactionType]
 
     def apply_transaction(transaction):
         return
@@ -32,7 +29,13 @@ class Store:
         return False
 
     def field_exists(field):
-        return
+        tags = field.split('.')
+        field = this.fields
+        for tag in tags:
+            if tag not in field.keys():
+                return False
+        
+        return True
 
     def get_field(label):
         return
