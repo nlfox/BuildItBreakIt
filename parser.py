@@ -40,6 +40,7 @@ reserved = {
 
 # List of token names.   This is always required
 tokens = [
+   'ID',
    'NUMBER',
    'STRING',
    'PLUS',
@@ -87,7 +88,7 @@ def t_NUMBER(t):
     return t
 
 def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    r'[a-zA-Z_][a-zA-Z0-9]*'
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
     return t
 
@@ -110,7 +111,7 @@ lexer = lex.lex()
 def main():
     # Test it out
     data = '''
-    as principal password do
+    as principal admin password do
     '''
 
     # OUTPUT:
