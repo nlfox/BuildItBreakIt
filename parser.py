@@ -8,34 +8,37 @@ import ply.lex as lex
 
 # Reserved words
 reserved = {
-    '=': 'EQUAL',
-    '->': 'ARROW',
-    'if': 'IF',
-    'then': 'THEN',
-    'else': 'ELSE',
-    'while': 'WHILE',
-    'as': 'AS',
-    'principal': 'PRINCIPAL',
-    'password': 'PASSWORD',
-    'do': 'DO',
-    'exit': 'EXIT',
-    'return': 'RETURN',
-    'create': 'CREATE',
-    'change': 'CHANGE',
-    'set': 'SET',
-    'append': 'APPEND',
-    'to': 'TO',
-    'with': 'WITH',
-    'local': 'LOCAL',
-    'foreach': 'FOREACH',
-    'in': 'IN',
-    'replacewith': 'REPLACEWITH',
-    'delegation': 'DELEGATION',
-    'default': 'DEFAULT',
-    'delegator': 'DELEGATOR',
-    'read': 'READ',
-    'write': 'WRITE',
-    'delete': 'DELETE'
+    '=' : 'EQUAL',
+    '->' : 'ARROW',
+    '{' : 'LCURLYPAREN',
+    '}' : 'RCURLYPAREN',
+    ',' : 'COMMA',
+    'if' : 'IF',
+    'then' : 'THEN',
+    'else' : 'ELSE',
+    'while' : 'WHILE',
+    'as' : 'AS',
+    'principal' : 'PRINCIPAL',
+    'password' : 'PASSWORD',
+    'do' : 'DO',
+    'exit' : 'EXIT',
+    'return' : 'RETURN',
+    'create' : 'CREATE',
+    'change' : 'CHANGE',
+    'set' : 'SET',
+    'append' : 'APPEND',
+    'to' : 'TO',
+    'with' : 'WITH',
+    'local' : 'LOCAL',
+    'foreach' : 'FOREACH',
+    'in' : 'IN',
+    'replacewith' : 'REPLACEWITH',
+    'delegation' : 'DELEGATION',
+    'default' : 'DEFAULT',
+    'delegator' : 'DELEGATOR',
+    'read' : 'READ',
+    'write' : 'WRITE',
+    'delete' : 'DELETE'
 }
 
 # List of token names.   This is always required
@@ -60,6 +63,7 @@ t_DIVIDE = r'/'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_EQUAL = r'='
+t_COMMA = r','
 t_AS = r'as'
 t_PRINCIPAL = r'principal'
 t_PASSWORD = r'password'

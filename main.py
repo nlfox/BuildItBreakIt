@@ -1,3 +1,5 @@
+#!/usr/bin/python2
+
 import Server from server
 import Parser from parser
 import Interpreter from interpreter
