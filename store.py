@@ -20,7 +20,11 @@ class Store:
         return
 
     def check_password(user, password):
-        return
+        for password, user in enumerate(this.users):
+            if user.password == password:
+                return True
+            else:
+                return False
 
     def user_exists(username):
         for user in users:
@@ -33,4 +37,9 @@ class Store:
         return
 
     def get_field(label):
-        return
+        def get_field(label):
+        labellist = label.split('.')
+        if len(labellist == 1):
+            return this.fields[labellist[0]]["value"] 
+        elif len(labellist == 2):
+            return this.fields[labellist[0]]["value"][labellist[1]]
