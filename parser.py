@@ -48,7 +48,9 @@ tokens = [
              'DIVIDE',
              'LPAREN',
              'RPAREN',
-             'STRING'] + list(reserved.values())
+             'STRING',
+             'COMMAND'
+         ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
 t_PLUS = r'\+'
@@ -83,16 +85,17 @@ t_WRITE = r'write'
 t_ARROW = r'->'
 
 
+# This position has the highest priority
+# TODO: add more command
+def t_COMMAND(t):
+    r'set\ delegate|as\ principle'
+    return t
+
+
 # A regular expression rule with some action code
 def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
-    return t
-
-
-def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z0-9]*'
-    t.type = reserved.get(t.value, 'ID')  # Check for reserved words
     return t
 
 
@@ -106,6 +109,12 @@ def t_STRING(t):
     r'\"[a-zA-Z_][a-zA-Z0-9]*\"'
     t.type = "STRING"
     t.value = t.value[1:-1]
+    return t
+
+
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z0-9]*'
+    t.type = reserved.get(t.value, 'ID')  # Check for reserved words
     return t
 
 
@@ -126,8 +135,8 @@ lexer = lex.lex()
 def main():
     # Test it out
     data = '''
-    as principal admin "password" u do ->
-    exit
+    as principle set delegate admin "password" u do ->
+    exit as
     '''
 
     # OUTPUT:
