@@ -1,3 +1,5 @@
+#!/usr/bin/python2
+
 class Store:
 
     def init():
