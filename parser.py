@@ -1,4 +1,3 @@
-__author__ = 'lc'
 # ------------------------------------------------------------
 # calclex.py
 #
@@ -10,6 +9,7 @@ import ply.lex as lex
 # Reserved words
 reserved = {
     '=' : 'EQUAL',
+    '->' : 'ARROW',
     'if' : 'IF',
     'then' : 'THEN',
     'else' : 'ELSE',
@@ -42,7 +42,6 @@ reserved = {
 tokens = [
    'ID',
    'NUMBER',
-   'STRING',
    'PLUS',
    'MINUS',
    'TIMES',
@@ -80,6 +79,7 @@ t_DEFAULT = r'default'
 t_DELEGATOR = r'delegator'
 t_READ = r'read'
 t_WRITE = r'write'
+t_ARROW = r'->'
 
 # A regular expression rule with some action code
 def t_NUMBER(t):
@@ -111,7 +111,8 @@ lexer = lex.lex()
 def main():
     # Test it out
     data = '''
-    as principal admin password do
+    as principal admin password u do ->
+    exit
     '''
 
     # OUTPUT:
