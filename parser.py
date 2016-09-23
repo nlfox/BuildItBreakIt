@@ -10,6 +10,8 @@ import ply.lex as lex
 reserved = {
     '=' : 'EQUAL',
     '->' : 'ARROW',
+    '{' : 'LCURLYPAREN',
+    '}' : 'RCURLYPAREN',
     'if' : 'IF',
     'then' : 'THEN',
     'else' : 'ELSE',
@@ -55,6 +57,8 @@ t_MINUS   = r'-'
 t_TIMES   = r'\*'
 t_DIVIDE  = r'/'
 t_LPAREN  = r'\('
+t_LCURLYPAREN = r'\{'
+t_RCURLYPAREN = r'\}'
 t_RPAREN  = r'\)'
 t_EQUAL = r'='
 t_AS = r'as'
@@ -111,7 +115,7 @@ lexer = lex.lex()
 def main():
     # Test it out
     data = '''
-    as principal admin password u do ->
+    as principal admin password {u} do ->
     exit
     '''
 
