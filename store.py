@@ -22,8 +22,7 @@ class Store:
         for password, user in enumerate(this.users):
             if user.password == password:
                 return True
-            else:
-                return False
+        return False
 
     def user_exists(username):
         for user in users:
