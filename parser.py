@@ -12,6 +12,7 @@ reserved = {
     '->' : 'ARROW',
     '{' : 'LCURLYPAREN',
     '}' : 'RCURLYPAREN',
+    ',' : 'COMMA',
     'if' : 'IF',
     'then' : 'THEN',
     'else' : 'ELSE',
@@ -61,6 +62,7 @@ t_LCURLYPAREN = r'\{'
 t_RCURLYPAREN = r'\}'
 t_RPAREN  = r'\)'
 t_EQUAL = r'='
+t_COMMA = r','
 t_AS = r'as'
 t_PRINCIPAL = r'principal'
 t_PASSWORD = r'password'
@@ -115,7 +117,7 @@ lexer = lex.lex()
 def main():
     # Test it out
     data = '''
-    as principal admin password {u} do ->
+    as principal, admin password \nu do ->
     exit
     '''
 
