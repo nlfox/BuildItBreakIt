@@ -1,36 +1,19 @@
 #!/usr/bin/python2
 
-#--------------------------------------#
+# --------------------------------------#
 # Interpreter module                   #
-#--------------------------------------#
+# --------------------------------------#
 # Accepts a list of LexTokens and      #
 # interprets it to perform actions on  #
 # the store and server                 #
-#--------------------------------------#
+# --------------------------------------#
 # Important methods:                   #
 # - Interpreter::init(store, server)   #
 # - Interpreter::accept_tokens(tokens) #
-#--------------------------------------#
+# --------------------------------------#
 
-class _TokenParser(object):
-    def __init__(self, tokens):
-        self.tokens = tokens
+from parser import Lexer as _TokenParser
 
-    def expect(self, *args):
-        '''Removes and returns first element, or throws an error if types do not match'''
-        next_token = self.next()
-        if next_token == None:
-            raise ValueError("Unexpected end of input")
-        if next_token.type not in args:
-            raise ValueError("Unexpected token")
-        return next_token
-    
-    def next(self):
-        '''Removes and returns first element or None if queue empty'''
-        try:
-            return self.tokens.pop(0)
-        except IndexError:
-            return None
 
 class Interpreter(object):
     def __init__(self):
@@ -44,19 +27,19 @@ class Interpreter(object):
     def accept_tokens(self, tokens):
         '''Accepts a list of LexTokens and interprets it to perform actions on the store and server'''
         parser = _TokenParser(tokens)
-        
+
         try:
             while True:
                 token = parser.expect("COMMAND", "TERMINATOR")
                 if token.type == "COMMAND":
-                    #handle command
+                    # handle command
                     pass
                 elif token.type == "TERMINATOR":
                     break
-            for operation in operation_queue:
+            for operation in self.operation_queue:
                 operation()
         except Exception:
-            #rollback changes
+            # rollback changes
             pass
 
     def _parse_dict(self, parser):
