@@ -42,8 +42,8 @@ class Store:
 
     def get_field(label):
         def get_field(label):
-        labellist = label.split('.')
-        if len(labellist == 1):
-            return this.fields[labellist[0]]["value"] 
-        elif len(labellist == 2):
-            return this.fields[labellist[0]]["value"][labellist[1]]
+            labellist = label.split('.')
+            if len(labellist == 1):
+                return this.fields[labellist[0]]["value"] 
+            elif len(labellist == 2):
+                return this.fields[labellist[0]]["value"][labellist[1]]

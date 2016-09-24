@@ -1,19 +1,21 @@
 #!/usr/bin/python2
 
-import Server from server
-import Parser from parser
-import Interpreter from interpreter
-import Store from store
+from store import Store
+from parser import Parser
+from server import Server
+from interpreter import Interpreter
 
-hostname = "localhost"
-port = -1
+def __main__():
+    hostname = "localhost"
+    port = -1
 
-server = Server()
-parser = Parser()
-interpreter = Interpreter()
-store = Store()
+    store = Store()
+    parser = Parser()
+    server = Server()
+    interpreter = Interpreter()
 
-store.init()
-interpreter.init(store, server)
-parser.init(server)
-server.init(hostname, port)
+    store.init()
+    interpreter.init(store, server)
+    parser.init(server)
+    server.init(hostname, port)
+
