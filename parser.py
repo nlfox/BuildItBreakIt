@@ -58,7 +58,7 @@ class Lexer(object):
                  'TERMINATOR',
                  'LSQUBRA',
                  'RSQUBRA',
-                 'ITEM'
+                 'ID_GROUP'
              ] + list(reserved.values())
 
     t_PLUS = r'\+'
@@ -103,7 +103,7 @@ class Lexer(object):
         t.value = " ".join(t.value.split())
         return t
 
-    def t_ITEM(self, t):
+    def t_ID_GROUP(self, t):
         r'([a-zA-Z0-9]+\.)*[a-zA-Z0-9]+'
         t.value = t.value.split(".")
         return t
