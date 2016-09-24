@@ -14,8 +14,6 @@
 
 import json
 
-EXPR = ["ID", "ID_GROUP", "STRING", "LCURLYPAREN", "STR_FN"]
-
 class Interpreter(object):
 
     def __init__(self, controller):
@@ -91,10 +89,16 @@ class Interpreter(object):
             pass
         return result
 
+    def _parse_expr(self, parser):
+        token = parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN") 
+        if token.type = "LCURLYPAREN":
+            return _parse_dict(parser)
+        return token
+
     def _parse_dict(self, parser):
         dictionary = {}
         while True:
-            key = parser.expect("ID")
+            key = parser.expect("ID").value
             parser.expect("EQUAL")
             value = parser.expect("ID", "ID_GROUP", "STRING")
             dictionary[key] = value
@@ -113,11 +117,58 @@ class Interpreter(object):
         self.controller.begin_transaction(username, password)
 
     def _set(self, parser):
-        variable = parser.expect("ID", "ID_GROUP")
+        variable = parser.expect("ID").value
         parser.expect("EQUAL")
-        next_token = parser.expect(*EXPR)
-        if next_token.type == "LCURLYPAREN":
-            token_dict = self._parse_dict(parser)
-            self.controller.set(variable, token_dict)
-        else:
-            self.controller.set(variable, next_token)
+        expr = _parse_expr(parser)
+        self.operation_queue.append(lambda: self.controller.set(variable, expr))
+
+    def _change_password(self, parser):
+        name = parser.expect("ID").value
+        new_pass = parser.expect("STRING").value
+        self.operation_queue.append(lambda: self.controller.change_password(name, new_pass))
+
+    def _create_principal(self, parser):
+        name = parser.expect("ID").value
+        new_pass = parser.expect("STRING").value
+        self.operation_queue.append(lambda: self.controller.create_principal(name, new_pass))
+
+    def _append(self, parser):
+        val = parser.expect("ID").value
+        parser.expect("WITH")
+        expr = _parse_expr(parser)
+        self.operation_queue.append(lambda: self.controller.append(val, expr))
+
+    def _local(self, parser):
+        variable = parser.expect("ID").value
+        parser.expect("EQUAL")
+        expr = _parse_expr(parser)
+        self.operation_queue.append(lambda: self.controller.local(variable, expr))
+
+    def _foreach(self, parser):
+        y = parser.expect("ID").value
+        parser.expect("IN")
+        x = parser.expect("ID").value
+        parser.expect("REPLACEWITH")
+        expr = _parse_expr(parser)
+        self.operation_queue.append(lambda: self.controller.foreach(y, x, expr))
+
+    def _set_delegation(self, parser):
+        tgt = parser.expect("ID", "ALL")
+        q = parser.expect("ID").value
+        right = parser.expect("RIGHT").value
+        parser.expect("ARROW")
+        p = parser.expect("ID").value
+        self.operation_queue.append(lambda: self.controller.set_delegation(tgt, q, right, p))
+
+    def _delete_delegation(self parser):
+        tgt = parser.expect("ID", "ALL")
+        q = parser.expect("ID").value
+        right = parser.expect("RIGHT").value
+        parser.expect("ARROW")
+        p = parser.expect("ID").value
+        self.operation_queue.append(lambda: self.controller.delete_delegation(tgt, q, right, p))
+
+    def _default_delegator(self, parser):
+        parser.expect("EQUAL")
+        user = parser.expect("ID").value
+        self.operation_queue.append(lambda: self.controller.default_delegator(user))
