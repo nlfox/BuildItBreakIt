@@ -1,21 +1,21 @@
 #!/usr/bin/python2
 
-#--------------------------------------#
+# --------------------------------------#
 # Interpreter module                   #
-#--------------------------------------#
+# --------------------------------------#
 # Accepts a list of LexTokens and      #
 # interprets it to perform actions on  #
 # the store and server                 #
-#--------------------------------------#
+# --------------------------------------#
 # Important methods:                   #
 # - Interpreter::init(store, server)   #
 # - Interpreter::accept_tokens(tokens) #
-#--------------------------------------#
+# --------------------------------------#
 
 import json
 
-class Interpreter(object):
 
+class Interpreter(object):
     def __init__(self, controller):
         self.controller = controller
         self.operation_queue = []
@@ -25,7 +25,7 @@ class Interpreter(object):
 
     def accept(self, parser):
         '''Accepts the parser and interprets provided tokens to perform actions on the store and server'''
-        
+
         result = ""
         try:
             self._auth(parser)
@@ -43,7 +43,7 @@ class Interpreter(object):
                     result = result + self._status_json("SET")
                 elif cmd == "create principal":
                     self._create_principal(parser)
-                    result = result + self._satus_json("CREATE_PRINCIPAL")
+                    result = result + self._status_json("CREATE_PRINCIPAL")
                 elif cmd == "set delegation":
                     self._set_delegation(parser)
                     result = result + self._status_json("SET_DELEGATION")
@@ -90,9 +90,9 @@ class Interpreter(object):
         return result
 
     def _parse_expr(self, parser):
-        token = parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN") 
-        if token.type = "LCURLYPAREN":
-            return _parse_dict(parser)
+        token = parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN")
+        if token.type == "LCURLYPAREN":
+            return self._parse_dict(parser)
         return token
 
     def _parse_dict(self, parser):
@@ -119,7 +119,7 @@ class Interpreter(object):
     def _set(self, parser):
         variable = parser.expect("ID").value
         parser.expect("EQUAL")
-        expr = _parse_expr(parser)
+        expr = self._parse_expr(parser)
         self.operation_queue.append(lambda: self.controller.set(variable, expr))
 
     def _change_password(self, parser):
@@ -135,13 +135,13 @@ class Interpreter(object):
     def _append(self, parser):
         val = parser.expect("ID").value
         parser.expect("WITH")
-        expr = _parse_expr(parser)
+        expr = self._parse_expr(parser)
         self.operation_queue.append(lambda: self.controller.append(val, expr))
 
     def _local(self, parser):
         variable = parser.expect("ID").value
         parser.expect("EQUAL")
-        expr = _parse_expr(parser)
+        expr = self._parse_expr(parser)
         self.operation_queue.append(lambda: self.controller.local(variable, expr))
 
     def _foreach(self, parser):
@@ -149,7 +149,7 @@ class Interpreter(object):
         parser.expect("IN")
         x = parser.expect("ID").value
         parser.expect("REPLACEWITH")
-        expr = _parse_expr(parser)
+        expr = self._parse_expr(parser)
         self.operation_queue.append(lambda: self.controller.foreach(y, x, expr))
 
     def _set_delegation(self, parser):
@@ -160,7 +160,7 @@ class Interpreter(object):
         p = parser.expect("ID").value
         self.operation_queue.append(lambda: self.controller.set_delegation(tgt, q, right, p))
 
-    def _delete_delegation(self parser):
+    def _delete_delegation(self, parser):
         tgt = parser.expect("ID", "ALL")
         q = parser.expect("ID").value
         right = parser.expect("RIGHT").value
