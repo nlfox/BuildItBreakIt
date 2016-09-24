@@ -17,9 +17,9 @@ class Store:
     def apply_transaction(self, transaction):
         return
 
-    def check_password(self, user, password):
-        for password, user in enumerate(self.users):
-            if user.password == password:
+    def check_password(self, username, password):
+        for user in self.users:
+            if user.name == username and user.password == password:
                 return True
         return False
 
@@ -42,7 +42,7 @@ class Store:
     def get_field(self, label):
         def get_field(label):
             labellist = label.split('.')
-            if len(labellist == 1):
+            if len(labellist) == 1:
                 return self.fields[labellist[0]]["value"]
-            elif len(labellist == 2):
+            elif len(labellist) == 2:
                 return self.fields[labellist[0]]["value"][labellist[1]]
