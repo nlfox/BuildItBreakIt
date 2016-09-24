@@ -57,7 +57,8 @@ class Lexer(object):
                  'COMMAND',
                  'TERMINATOR',
                  'LSQUBRA',
-                 'RSQUBRA'
+                 'RSQUBRA',
+                 'ITEM'
              ] + list(reserved.values())
 
     t_PLUS = r'\+'
@@ -100,6 +101,11 @@ class Lexer(object):
     def t_COMMAND(self, t):
         r'as\ +principal|create\ +principal|change\ +password|append\ +to|set\ +delegation|delete\ +delegation|default\ +delegator'
         t.value = " ".join(t.value.split())
+        return t
+
+    def t_ITEM(self, t):
+        r'([a-zA-Z0-9]+\.)*[a-zA-Z0-9]+'
+        t.value = t.value.split(".")
         return t
 
     # A regular expression rule with some action code
@@ -177,7 +183,7 @@ class Lexer(object):
 
 # Test it out
 data = '''
-as  principal    set  delegate admin  "as principle" u do  -> set x.y = "1" [] *** exit as
+as  principal    set  delegate admin  "as principle" u do  -> set xa.ya.zzz = "1" [] *** exit as
 '''
 
 # OUTPUT:
