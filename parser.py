@@ -58,7 +58,8 @@ class Lexer(object):
                  'TERMINATOR',
                  'LSQUBRA',
                  'RSQUBRA',
-                 'ID_GROUP'
+                 'ID_GROUP',
+                 'PROG'
              ] + list(reserved.values())
 
     t_PLUS = r'\+'
@@ -99,7 +100,12 @@ class Lexer(object):
     # This position has the highest priority
     # TODO: add more command
     def t_COMMAND(self, t):
-        r'as\ +principal|create\ +principal|change\ +password|append\ +to|set\ +delegation|delete\ +delegation|default\ +delegator'
+        r'create\ +principal|change\ +password|append\ +to|set\ +delegation|delete\ +delegation|default\ +delegator'
+        t.value = " ".join(t.value.split())
+        return t
+
+    def t_PROG(self, t):
+        r'as\ +principal'
         t.value = " ".join(t.value.split())
         return t
 
