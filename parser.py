@@ -104,7 +104,7 @@ class Lexer(object):
         return t
 
     def t_ID_GROUP(self, t):
-        r'([a-zA-Z0-9]+\.)*[a-zA-Z0-9]+'
+        r'([a-zA-Z0-9]+\.){1,}[a-zA-Z0-9]+'
         t.value = t.value.split(".")
         return t
 
@@ -191,4 +191,5 @@ as  principal    set  delegate admin  "as principle" u do  -> set xa.ya.zzz = "1
 
 m = Lexer(data)
 
-print[i for i in m.gen]
+for i in m.gen:
+    print i
