@@ -158,7 +158,7 @@ class Lexer(object):
 
 # Test it out
 data = '''
-as  principal    set  delegate admin  "as principle" u do  ->
+as  principal    set  delegate admin  "as principle" u do  -> set x.y = "1"
 exit as
 '''
 
