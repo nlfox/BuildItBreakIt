@@ -1,45 +1,61 @@
+#!/usr/bin/python2
+
 class Store:
+    def __init__(self):
+        self.fields = {}
+        self.users = {}
 
-    def init():
-        this.fields = {}
-        this.users = []
-        
-    
-    def has_permission(username, label, transactionType):
-        userId = -1
-        for index, user in enumerate(this.users):
-            if user.name == username:
-                userId = index
-                break
+        self.fieldsPatch = {}
+        self.usersPatch = {}
 
-        
-        
-        return
+    def begin_transaction(self):
+        self.fieldsPatch = {}
+        self.usersPatch = {}
 
-    def apply_transaction(transaction):
-        return
+    def modify_principal(self, username, password):
+        self.usersPatch[username] = password
 
-    def check_password(user, password):
-        for password, user in enumerate(this.users):
-            if user.password == password:
+    def has_permission(self, username, label, transactionType):
+        label = label.split()[0]
+
+        if label in self.fields.keys():
+            return username in self.fields[label][transactionType]
+        elif label in self.fieldsPatch.keys():
+            return username in self.fieldsPatch[label][transactionType]
+
+    def check_password(self, username, password):
+        for user in self.users:
+            if user.name == username and user.password == password:
                 return True
-            else:
-                return False
 
-    def user_exists(username):
-        for user in users:
+        for user in self.usersPatch:
+            if user.name == username and user.password == password:
+                return True
+            
+        return False
+
+    def get_field(self, label):
+        labellist = label.split('.')
+        if len(labellist) == 1:
+            return self.fields[labellist[0]]["value"]
+        elif len(labellist) == 2:
+            return self.fields[labellist[0]]["value"][labellist[1]]
+
+    def user_exists(self, username):
+        for user in self.usersPatch:
+            if user.name == username:
+                return True
+        
+        for user in self.users:
             if user.name == username:
                 return True
 
         return False
 
-    def field_exists(field):
-        return
+    def field_exists(self, label):
+        tags = label.split('.')
 
-    def get_field(label):
-        def get_field(label):
-        labellist = label.split('.')
-        if len(labellist == 1):
-            return this.fields[labellist[0]]["value"] 
-        elif len(labellist == 2):
-            return this.fields[labellist[0]]["value"][labellist[1]]
+        if len(tags) == 1:
+            return tags[0] in this.fields.keys() or tags[0] in this.fieldsPatch.keys()
+        else:
+            return tags[1] in this.fields[tags[0]]["value"].keys() or tags[1] in this.fieldsPatch[tags[0]]["value"].keys()
