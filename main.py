@@ -5,7 +5,7 @@ from parser import Parser
 from server import Server
 from interpreter import Interpreter
 
-def __main__():
+def main():
     hostname = "localhost"
     port = -1
 
@@ -19,3 +19,5 @@ def __main__():
     parser.init(server)
     server.init(hostname, port)
 
+if __name__ == "__main__":
+    main()
