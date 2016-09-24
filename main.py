@@ -10,14 +10,9 @@ def main():
     port = -1
 
     store = Store()
-    parser = Parser()
-    server = Server()
-    interpreter = Interpreter()
-
-    store.init()
-    interpreter.init(store, server)
-    parser.init(server)
-    server.init(hostname, port)
+    server = Server(hostname, port)
+    parser = Parser(server)
+    interpreter = Interpreter(store, server)
 
 if __name__ == "__main__":
     main()

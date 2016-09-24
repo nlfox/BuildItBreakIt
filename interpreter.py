@@ -1,16 +1,16 @@
 #!/usr/bin/python2
 
-#--------------------------------------#
+# --------------------------------------#
 # Interpreter module                   #
-#--------------------------------------#
+# --------------------------------------#
 # Accepts a list of LexTokens and      #
 # interprets it to perform actions on  #
 # the store and server                 #
-#--------------------------------------#
+# --------------------------------------#
 # Important methods:                   #
 # - Interpreter::init(store, server)   #
 # - Interpreter::accept_tokens(tokens) #
-#--------------------------------------#
+# --------------------------------------#
 
 class Interpreter(object):
     def __init__(self):
@@ -35,7 +35,6 @@ class Interpreter(object):
                         _parse_set(parser)
                     else:
                         raise ValueError("Unsupported command was provided")
-                    pass
                 # terminate command block
                 elif token.type == "TERMINATOR":
                     break
@@ -44,7 +43,6 @@ class Interpreter(object):
             self.store.accept_changes()
         except Exception:
             self.store.rollback()
-            # Send error to server
             pass
 
     def _parse_dict(self, parser):
