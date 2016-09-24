@@ -47,18 +47,8 @@ class Interpreter(object):
             pass
         return result
 
-    def _auth(self, parser):
-        parser.expect("AS_PRINCIPAL")
-        username = parser.expect("ID").value
-        parser.expect("PASSWORD")
-        password = parser.expect("STRING").value
-        parser.expect("DO")
-
-        self.controller.begin_transaction(username, password)
-
-
-    def _dict(self, parser):
-        dictionary = []
+    def _parse_dict(self, parser):
+        dictionary = {}
         while True:
             key = parser.expect("ID")
             parser.expect("EQUAL")
@@ -69,12 +59,21 @@ class Interpreter(object):
                 break
         return dictionary
 
+    def _auth(self, parser):
+        parser.expect("AS_PRINCIPAL")
+        username = parser.expect("ID").value
+        parser.expect("PASSWORD")
+        password = parser.expect("STRING").value
+        parser.expect("DO")
+
+        self.controller.begin_transaction(username, password)
+
     def _set(self, parser):
         variable = parser.expect("ID").value
         parser.expect("EQUAL")
         next_token = parser.expect("ID", "STRING", "LCURLYPAREN")
         if next_token.type == "LCURLYPAREN":
-            token_dict = self._dict(parser)
+            token_dict = self._parse_dict(parser)
             self.controller.set(variable, token_dict)
         else:
             self.controller.set(variable, next_token)
