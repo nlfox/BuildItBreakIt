@@ -126,10 +126,6 @@ class Lexer(object):
         print("Illegal character '%s'" % t.value[0])
         t.lexer.skip(1)
 
-    # Build the lexer
-    def build(self, **kwargs):
-        self.lexer = lex.lex(module=self, **kwargs)
-
     def test(self, data):
         self.lexer.input(data)
         while True:
@@ -151,8 +147,30 @@ class Lexer(object):
             r += [tok]
         return r
 
-    def __init__(self, data=""):
+    def _initGen(self):
+        self.lexer.input(self.data)
+        while True:
+            tok = self.lexer.token()
+            if not tok:
+                break
+            yield tok
+
+    def expect(self, *args):
+        '''Removes and returns first element, or throws an error if types do not match'''
+        next_token = self.next()
+        if next_token == None:
+            raise ValueError("Unexpected end of input")
+        if next_token.type not in args:
+            raise ValueError("Unexpected token")
+        return next_token
+
+    def next(self):
+        return self.gen.next()
+
+    def __init__(self, data="", **kwargs):
         self.data = data
+        self.lexer = lex.lex(module=self, **kwargs)
+        self.gen = self._initGen()
         pass
 
 
@@ -165,7 +183,5 @@ exit as
 # OUTPUT:
 # PARSE: LexToken(AS, 'as',...)
 
-m = Lexer()
-m.setData(data)
-m.build()
-print m.tokenize()
+m = Lexer(data)
+print m.expect("COMMAND")
