@@ -13,19 +13,16 @@
 #--------------------------------------#
 
 class Interpreter(object):
-    def __init__(self):
+    def __init__(self, controller):
+        self.controller = controller
         self.operation_queue = []
-
-    def init(self, store, server):
-        '''Custom init command to be called after the actual initialization'''
-        self.store = store
-        self.server = server
 
     def accept(self, parser):
         '''Accepts the parser and interprets provided tokens to perform actions on the store and server'''
+        
+        result = ""
         try:
             # authenticate user
-
             # read commands
             while True:
                 token = parser.expect("COMMAND", "TERMINATOR")
@@ -40,10 +37,11 @@ class Interpreter(object):
                     break
             for operation in self.operation_queue:
                 operation()
-            self.store.accept_changes()
+            self.controller.accept_changes()
         except Exception:
-            self.store.rollback()
+            self.controller.rollback()
             pass
+        return result
 
     def _parse_dict(self, parser):
         dictionary = []
