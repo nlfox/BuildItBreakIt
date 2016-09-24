@@ -54,7 +54,10 @@ class Lexer(object):
                  'LPAREN',
                  'RPAREN',
                  'STRING',
-                 'COMMAND'
+                 'COMMAND',
+                 'TERMINATOR',
+                 'LSQUBRA',
+                 'RSQUBRA'
              ] + list(reserved.values())
 
     t_PLUS = r'\+'
@@ -63,6 +66,8 @@ class Lexer(object):
     t_DIVIDE = r'/'
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
+    t_LSQUBRA = r'\['
+    t_RSQUBRA = r'\]'
     t_EQUAL = r'='
     t_COMMA = r','
     t_AS = r'as'
@@ -88,6 +93,7 @@ class Lexer(object):
     t_READ = r'read'
     t_WRITE = r'write'
     t_ARROW = r'->'
+    t_TERMINATOR = r'\*\*\*'
 
     # This position has the highest priority
     # TODO: add more command
@@ -134,9 +140,6 @@ class Lexer(object):
                 break
             print(tok)
 
-    def setData(self, data):
-        self.data = data
-
     def tokenize(self):
         self.lexer.input(self.data)
         r = []
@@ -174,12 +177,12 @@ class Lexer(object):
 
 # Test it out
 data = '''
-as  principal    set  delegate admin  "as principle" u do  -> set x.y = "1"
-exit as
+as  principal    set  delegate admin  "as principle" u do  -> set x.y = "1" [] *** exit as
 '''
 
 # OUTPUT:
 # PARSE: LexToken(AS, 'as',...)
 
 m = Lexer(data)
-print m.expect("COMMAND")
+
+print[i for i in m.gen]
