@@ -12,9 +12,6 @@
 # - Interpreter::accept_tokens(tokens) #
 # --------------------------------------#
 
-from parser import Lexer as _TokenParser
-
-
 class Interpreter(object):
     def __init__(self):
         self.operation_queue = []
@@ -24,28 +21,31 @@ class Interpreter(object):
         self.store = store
         self.server = server
 
-    def accept_tokens(self, tokens):
-        '''Accepts a list of LexTokens and interprets it to perform actions on the store and server'''
-        parser = _TokenParser(tokens)
-
+    def accept_tokens(self, parser):
+        '''Accepts the parser and interprets provided tokens to perform actions on the store and server'''
         try:
+            # authenticate user
+
+            # read commands
             while True:
                 token = parser.expect("COMMAND", "TERMINATOR")
                 if token.type == "COMMAND":
-                    # handle command
-                    pass
+                    cmd = token.value
+                    if cmd == "set":
+                        _parse_set(parser)
+                    else:
+                        raise ValueError("Unsupported command was provided")
+                # terminate command block
                 elif token.type == "TERMINATOR":
                     break
             for operation in self.operation_queue:
                 operation()
+            self.store.accept_changes()
         except Exception:
-            # rollback changes
+            self.store.rollback()
             pass
 
     def _parse_dict(self, parser):
-        '''Parses and returns dictionary using the parser, expects opening brace to be already parsed.
-        Resulting dictionary's values will be LexTokens'''
-
         dictionary = []
         while True:
             key = parser.expect("ID")
@@ -66,5 +66,5 @@ class Interpreter(object):
         elif next_token.type == "STRING":
             pass
         elif next_token.type == "LCURLYPAREN":
-            dictionary = self._parse_dict(parser)
+            token_dict = self._parse_dict(parser)
             pass
