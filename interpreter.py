@@ -12,6 +12,8 @@
 # - Interpreter::accept_tokens(tokens) #
 #--------------------------------------#
 
+import json
+
 EXPR = ["ID", "ID_GROUP", "STRING", "LCURLYPAREN", "STR_FN"]
 
 class Interpreter(object):
@@ -73,12 +75,12 @@ class Interpreter(object):
                     self.controller.end_transaction_exit(result)
                     break
                 elif cmd == "return":
-                    result = parser.expect(*EXPR)
+                    return_value = parser.expect(*EXPR)
                     parser.expect("TERMINATOR")
                     for operation in self.operation_queue:
                         operation()
-                    value = self.controller.get_value(result)
-                    result = result + self._status_json('RETURNING", "output":"' + result)
+                    value = self.controller.get_value(return_value)
+                    result = result + '{"status":"RETURNING", "output":' + json.dumps(value) + '}'
                     self.controller.end_transaction(result)
                     break
                 else:
