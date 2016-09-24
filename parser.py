@@ -138,7 +138,6 @@ lexer = lex.lex()
 
 def main():
     # Test it out
-    #TODO: this is still legal!! fix this
     data = '''
     as  principle    set  delegate admin  "pas sword" u do  ->
     exit as

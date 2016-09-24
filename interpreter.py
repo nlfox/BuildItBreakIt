@@ -46,10 +46,10 @@ class Interpreter(object):
             while True:
                 token = parser.expect("COMMAND", "TERMINATOR")
                 
-                if token.value == "COMMAND":
+                if token.type == "COMMAND":
                     #handle command
                     pass
-                elif token.value == "TERMINATOR":
+                elif token.type == "TERMINATOR":
                     break
             #update store
         except Exception:
