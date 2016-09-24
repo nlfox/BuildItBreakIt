@@ -28,7 +28,6 @@ class Lexer(object):
         'create': 'CREATE',
         'change': 'CHANGE',
         'set': 'SET',
-        'append': 'APPEND',
         'to': 'TO',
         'with': 'WITH',
         'local': 'LOCAL',
@@ -38,9 +37,11 @@ class Lexer(object):
         'delegation': 'DELEGATION',
         'default': 'DEFAULT',
         'delegator': 'DELEGATOR',
-        'read': 'READ',
-        'write': 'WRITE',
-        'delete': 'DELETE'
+        'read': 'RIGHT',
+        'write': 'RIGHT',
+        'append': 'RIGHT',
+        'delegate': 'RIGHT',
+
     }
 
     # List of token names.   This is always required
@@ -59,9 +60,8 @@ class Lexer(object):
                  'LSQUBRA',
                  'RSQUBRA',
                  'ID_GROUP',
-                 'PROG'
+                 'PROG',
              ] + list(reserved.values())
-
     t_PLUS = r'\+'
     t_MINUS = r'-'
     t_TIMES = r'\*'
@@ -81,7 +81,6 @@ class Lexer(object):
     t_CREATE = r'create'
     t_CHANGE = r'change'
     t_SET = r'set'
-    t_APPEND = r'append'
     t_TO = r'to'
     t_WITH = r'with'
     t_LOCAL = r'local'
@@ -89,13 +88,11 @@ class Lexer(object):
     t_IN = r'in'
     t_REPLACEWITH = r'replacewith'
     t_DELEGATION = r'delegation'
-    t_DELETE = r'delete'
     t_DEFAULT = r'default'
     t_DELEGATOR = r'delegator'
-    t_READ = r'read'
-    t_WRITE = r'write'
     t_ARROW = r'->'
     t_TERMINATOR = r'\*\*\*'
+    t_RIGHT = r'read|write|append|delegate'
 
     # This position has the highest priority
     # TODO: add more command
@@ -181,14 +178,14 @@ class Lexer(object):
 
     def __init__(self, data="", **kwargs):
         self.data = data
-        self.lexer = lex.lex(module=self, **kwargs)
+        self.lexer = lex.lex(module=self, errorlog=lex.NullLogger(), **kwargs)
         self.gen = self._initGen()
         pass
 
 
 # Test it out
 data = '''
-as  principal    set  delegate admin  "as principle" u do  -> set xa.ya.zzz = "1" [] *** exit as
+as  principal read write delegate append set  delegate admin  "as principle" u do  -> set xa.ya.zzz = "1" [] *** exit as
 '''
 
 # OUTPUT:
