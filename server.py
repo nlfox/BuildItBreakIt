@@ -1,10 +1,11 @@
 #!/usr/bin/python2
 
 import socket
-from interpreter import Lexer
+from parser import Lexer
 
 class Server(object):
-    def __init__(self, hostname, port):
+    def __init__(self, interpreter, hostname, port):
+        self.interpreter = interpreter
         self.address = (hostname, port)
 
     def start(self):
@@ -20,13 +21,6 @@ class Server(object):
                     result = result + data
                     if "***" in data:
                         break
-                self.interpreter.accept(Lexer(result))
+                self.connection.sendall(self.interpreter.accept(Lexer(result)))
             finally:
                 self.connection.close()
-
-    def send_data(self, data):
-        try:
-            self.connection.sendall(data)
-        finally:
-            pass
-        

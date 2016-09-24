@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 
 from store import Store
-from parser import Parser
+from controller import Controller
 from server import Server
 from interpreter import Interpreter
 
@@ -11,8 +11,10 @@ def main():
 
     store = Store()
     server = Server(hostname, port)
-    parser = Parser(server)
-    interpreter = Interpreter(store, server)
+    controller = Controller(store, server)
+    interpreter = Interpreter(controller)
+
+    server.start(interpreter)
 
 if __name__ == "__main__":
     main()
