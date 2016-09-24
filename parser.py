@@ -107,8 +107,7 @@ class Lexer(object):
         return t
 
     def t_ID_GROUP(self, t):
-        r'([a-zA-Z0-9]+\.){1,}[a-zA-Z0-9]+'
-        t.value = t.value.split(".")
+        r'[a-zA-Z0-9]+\.[a-zA-Z0-9]+'
         return t
 
     # A regular expression rule with some action code
@@ -185,7 +184,7 @@ class Lexer(object):
 
 # Test it out
 data = '''
-as  principal read write delegate append set  delegate admin  "as principle" u do  -> set xa.ya.zzz = "1" [] *** exit as
+as  principal read write delegate append set  delegate admin  "as principle" u do  -> set xa.ya.j = "1" [] *** exit as
 '''
 
 # OUTPUT:
