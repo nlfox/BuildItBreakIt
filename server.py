@@ -4,8 +4,7 @@ import socket
 from parser import Lexer
 
 class Server(object):
-    def __init__(self, interpreter, hostname, port):
-        self.interpreter = interpreter
+    def __init__(self, hostname, port):
         self.address = (hostname, port)
 
     def start(self):
@@ -21,6 +20,6 @@ class Server(object):
                     result = result + data
                     if "***" in data:
                         break
-                self.connection.sendall(self.interpreter.accept(Lexer(result)))
+                self.connection.sendall(interpreter.accept(Lexer(result)))
             finally:
                 self.connection.close()
