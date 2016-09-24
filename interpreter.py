@@ -23,9 +23,22 @@ class Interpreter(object):
         result = ""
         try:
             # authenticate user
+            parser.expect("AS_PRINCIPAL")
+            username = parser.expect("ID").value
+            parser.expect("PASSWORD")
+            password = parser.expect("STRING").value
+            parser.expect("DO")
+
+            self.controller.begin_transaction(username, password)
+
             # read commands
+            expected_line = 2
             while True:
                 token = parser.expect("COMMAND", "TERMINATOR")
+                
+                if token.lineno != expected_line:
+                    raise RuntimeError("FAILED")
+
                 if token.type == "COMMAND":
                     cmd = token.value
                     if cmd == "set":
@@ -35,6 +48,8 @@ class Interpreter(object):
                 # terminate command block
                 elif token.type == "TERMINATOR":
                     break
+
+                expected_line = expected_line + 1
             for operation in self.operation_queue:
                 operation()
             self.controller.accept_changes()

@@ -135,8 +135,7 @@ class Lexer(object):
 
     # Error handling rule
     def t_error(self, t):
-        print("Illegal character '%s'" % t.value[0])
-        t.lexer.skip(1)
+        raise RuntimeError("FAILED")
 
     def test(self, data):
         self.lexer.input(data)
@@ -168,7 +167,7 @@ class Lexer(object):
         '''Removes and returns first element, or throws an error if types do not match'''
         next_token = self.next()
         if next_token.type not in args:
-            raise ValueError("Unexpected token")
+            raise RuntimeError("FAILED")
         return next_token
 
     def next(self):
