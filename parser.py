@@ -158,8 +158,6 @@ class Lexer(object):
     def expect(self, *args):
         '''Removes and returns first element, or throws an error if types do not match'''
         next_token = self.next()
-        if next_token == None:
-            raise ValueError("Unexpected end of input")
         if next_token.type not in args:
             raise ValueError("Unexpected token")
         return next_token
