@@ -92,7 +92,8 @@ t_ARROW = r'->'
 # This position has the highest priority
 # TODO: add more command
 def t_COMMAND(t):
-    r'set\ delegate|as\ principle'
+    r'set\ +delegate|as\ +principle'
+    t.value = " ".join(t.value.split())
     return t
 
 
@@ -108,9 +109,8 @@ def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
-
 def t_STRING(t):
-    r'\"[a-zA-Z_][a-zA-Z0-9]*\"'
+    r'"[A-Za-z0-9_ ,;\.?!-]*"'
     t.type = "STRING"
     t.value = t.value[1:-1]
     return t
@@ -138,8 +138,9 @@ lexer = lex.lex()
 
 def main():
     # Test it out
+    #TODO: this is still legal!! fix this
     data = '''
-    as principle set delegate admin "password" u do ->
+    as  principle    set  delegate admin  "pas sword" u do  ->
     exit as
     '''
 
