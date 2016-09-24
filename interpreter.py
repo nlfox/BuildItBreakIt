@@ -84,8 +84,8 @@ class Interpreter(object):
                 else:
                     raise ValueError("Unsupported command was provided")
 
-        except Exception:
-            self.controller.rollback()
+        except RuntimeError as err:
+            self.controller.return_error(err.args[0])
             pass
         return result
 

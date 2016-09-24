@@ -3,9 +3,10 @@ from store import Store
 
 class Controller:
     
-    def __init__(self):
+    def __init__(self, store, server):
         self.principal = ""
-        self.store = Store()
+        self.store = store
+        self.server = server
 
     def apply_permissions(self, access_criterion, success_criterion, action):
         if access_criterion:
@@ -20,6 +21,19 @@ class Controller:
         self.principal = principal
         self.store.begin_transaction()
 
+    def end_transaction(self, result):
+        # apply changes and submit result
+        pass
+
+    def end_transaction_exit(self, result):
+        # apply changes, check for permission, submit result and exit
+        pass
+
+    def return_error(self, msg):
+        # return {"status":"msg"} to client and rollback
+        pass
+
+
     def create_principal(self, username, password):
         self.apply_permissions(
             self.principal == "admin",
@@ -33,6 +47,10 @@ class Controller:
             self.store.user_exists(username),
             lambda self: self.store.modify_principal(username, password)
             )
+
+    def get_value(self, token):
+        # evaluate token value and return that
+        pass
 
     def set(self, field, expression):
         pass
