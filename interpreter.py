@@ -1,16 +1,16 @@
 #!/usr/bin/python2
 
-# --------------------------------------#
+#--------------------------------------#
 # Interpreter module                   #
-# --------------------------------------#
+#--------------------------------------#
 # Accepts a list of LexTokens and      #
 # interprets it to perform actions on  #
 # the store and server                 #
-# --------------------------------------#
+#--------------------------------------#
 # Important methods:                   #
 # - Interpreter::init(store, server)   #
 # - Interpreter::accept_tokens(tokens) #
-# --------------------------------------#
+#--------------------------------------#
 
 class Interpreter(object):
     def __init__(self):
@@ -21,7 +21,7 @@ class Interpreter(object):
         self.store = store
         self.server = server
 
-    def accept_tokens(self, parser):
+    def accept(self, parser):
         '''Accepts the parser and interprets provided tokens to perform actions on the store and server'''
         try:
             # authenticate user

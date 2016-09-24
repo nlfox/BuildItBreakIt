@@ -1,6 +1,7 @@
 #!/usr/bin/python2
 
 import socket
+from interpreter import Lexer
 
 class Server(object):
     def __init__(self, hostname, port):
@@ -11,5 +12,21 @@ class Server(object):
         self.sock.bind(self.address)
         sock.listen(1)
         while True:
-            connection, client_address = self.sock.accept()
+            self.connection, client_address = self.sock.accept()    
+            try:
+                result = ""
+                while True:
+                    data = self.connection.recv(4096)
+                    result = result + data
+                    if "***" in data:
+                        break
+                self.interpreter.accept(Lexer(result))
+            finally:
+                self.connection.close()
 
+    def send_data(self, data):
+        try:
+            self.connection.sendall(data)
+        finally:
+            pass
+        
