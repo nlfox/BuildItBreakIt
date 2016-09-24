@@ -56,13 +56,11 @@ class Interpreter(object):
         return dictionary
 
     def _parse_set(self, parser):
-        variable = parser.expect("ID")
+        variable = parser.expect("ID").value
         parser.expect("EQUAL")
         next_token = parser.expect("ID", "STRING", "LCURLYPAREN")
-        if next_token.type == "ID":
-            pass
-        elif next_token.type == "STRING":
-            pass
-        elif next_token.type == "LCURLYPAREN":
+        if next_token.type == "LCURLYPAREN":
             token_dict = self._parse_dict(parser)
-            pass
+            self.controller.set(variable, token_dict)
+        else:
+            self.controller.set(variable, next_token)
