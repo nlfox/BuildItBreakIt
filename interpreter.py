@@ -104,7 +104,7 @@ class Interpreter(object):
         return dictionary
 
     def _auth(self, parser):
-        parser.expect("AS_PRINCIPAL")
+        parser.expect("PROG")
         username = parser.expect("ID").value
         parser.expect("PASSWORD")
         password = parser.expect("STRING").value
