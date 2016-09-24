@@ -10,8 +10,10 @@ import ply.lex as lex
 reserved = {
     '=' : 'EQUAL',
     '->' : 'ARROW',
-    '{' : 'LCURLYPAREN',
-    '}' : 'RCURLYPAREN',
+    '{' : 'CLPAREN',
+    '}' : 'CRPAREN',
+    '[' : 'SLPAREN',
+    ']' : 'SRPAREN',
     ',' : 'COMMA',
     'if' : 'IF',
     'then' : 'THEN',
@@ -49,8 +51,8 @@ tokens = [
              'MINUS',
              'TIMES',
              'DIVIDE',
-             'LPAREN',
-             'RPAREN',
+             'OLPAREN',
+             'ORPAREN',
              'STRING'] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -58,8 +60,12 @@ t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
+t_OLPAREN = r'\('
+t_ORPAREN = r'\)'
+t_SRPAREN = r'\]'
+t_SLPAREN = r'\['
+t_CLPAREN = r'\{'
+t_CRPAREN = r'\}'
 t_EQUAL = r'='
 t_COMMA = r','
 t_AS = r'as'
@@ -130,7 +136,7 @@ lexer = lex.lex()
 def main():
     # Test it out
     data = '''
-    as principal admin "password" u do ->
+    as principal admin "password" u, "1-1" {} do ->
     exit
     '''
 
