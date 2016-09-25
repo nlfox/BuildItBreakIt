@@ -18,6 +18,7 @@ except RuntimeError as e:
 
 try:
     controller.create_principal('alice', 'alice')
+    controller.create_principal('bob', 'bob')
 except RuntimeError as e:
     print e
 
@@ -29,3 +30,29 @@ except RuntimeError as e:
     print e
 
 print store
+
+controller.begin_transaction('alice', 'alice')
+
+controller.set('x', 'this')
+controller.set('y', 'that')
+
+controller.set_delegation('all', 'alice', 'read', 'bob')
+
+controller.end_transaction()
+
+controller.begin_transaction('bob', 'bob')
+
+try:
+    print controller.get_field('x')
+except RuntimeError as e:
+    print e
+
+try:
+    print controller.get_field('y')
+except RuntimeError as e:
+    print e
+
+try:
+    controller.set('x', 'other')
+except RuntimeError as e:
+    print e
