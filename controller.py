@@ -27,7 +27,7 @@ class Controller:
             raise RuntimeError("DENIED")
 
         self.principal = principal
-        self.store.begin_transaction()
+        self.store.begin_transaction(principal)
 
     def end_transaction(self):
         self.store.complete_transaction()

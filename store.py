@@ -11,6 +11,7 @@ class Store:
         self.local = {}
 
         self.S = SecurityState()
+        self.principal = ""
 
     def __str__(self):
         s = ""
@@ -27,10 +28,11 @@ class Store:
         s += "\n"
         return s
 
-    def begin_transaction(self):
+    def begin_transaction(self, principal):
         self.fieldsPatch = {}
         self.usersPatch = {}
         self.local = {}
+        self.principal = principal
 
     def discard_transaction(self):
         self.begin_transaction()
@@ -118,6 +120,9 @@ class Store:
                 return type(self.fieldsPatch[tags[0]][tags[1]])
 
     def set_field(self, field, value):
+        if not self.field_exists(field):
+            self.S.own(self.principal, field)
+            
         self.fieldsPatch[field] = value
 
     def set_local(self, field, value):
