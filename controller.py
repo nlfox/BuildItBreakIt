@@ -1,6 +1,7 @@
 #!/usr/bin/python2
 
 from store import Store
+import ply.lex as lex
 
 class Controller:
     
@@ -112,10 +113,9 @@ class Controller:
     def set_delegation(self, field, authority, permission, user):
         self.apply_permissions(
             (self.principal == "admin" or self.principal == authority) and
-            self.store.has_permission(authority, field, "delegate") and
-            self.store.has_permission(authority, field, permission),
+            self.store.has_permission(authority, field, "delegate"),
 
-            self.store.field_exists(field) and
+            self.store.shallow_field_exists(field) and
             self.store.user_exists(user) and
             self.store.user_exists(authority),
 
@@ -124,12 +124,51 @@ class Controller:
 
     def delete_delegation(self, field, authority, permission, user):
         self.apply_permission(
-            
+            self.principal == "admin" or
+            (self.principal == authority and self.store.has_permission(authority, field, "delegate")) or
+            self.principal == user,
+
+            self.store.shallow_field_exists(field) and
+            self.store.user_exists(user) and
+            self.store.user_exists(authority),
+
+            lambda self: self.store.delete_delegation(field, authority, permission, user)
+            )
 
     def default_delegator(self, user):
         pass
 
     def _parse_expression(self, expression):
-        pass
+        if type(expression) == str:
+            return expression
+        
+        elif type(expression) == list:
+            if len(expression) > 0:
+                raise RuntimeError("FAILED")
+            else:
+                return []
+            
+        elif type(expression) == dict:
+            resolved_dict = {}
+            for key in expression.keys():
+                resolved_dict[key] = self._parse_value(expression[key])
+
+            return resolved_dict
+
+    def _parse_value(self, value):
+        if type(value) == str:
+            return value
+
+        elif type(value) == LexToken:
+            if value.type == "ID" or value.type == "ID_GROUP":
+                if self.store.has_permission(self.principal, value.value):
+                    if self.store.field_exists(value.value):
+                        return self.store.get_field(value.value)
+                    else:
+                        raise RuntimeError("FAILED")
+                else:
+                    raise RuntimeError("DENIED")
+            else:
+                raise RuntimeError("Unknown token type")
 
 # has_permission should return true if the field doesn't exist
