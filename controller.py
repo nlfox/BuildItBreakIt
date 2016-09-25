@@ -34,7 +34,7 @@ class Controller:
 
     def end_transaction_exit(self):
         # apply changes, check for permission and end program
-        server.run = False # Stops server
+        self.server.run = False # Stops server
         pass
 
     def create_principal(self, username, password):
