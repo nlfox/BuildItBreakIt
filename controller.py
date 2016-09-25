@@ -28,18 +28,14 @@ class Controller:
         self.principal = principal
         self.store.begin_transaction()
 
-    def end_transaction(self, result):
-        # apply changes and submit result
+    def end_transaction(self):
+        # apply changes
         pass
 
-    def end_transaction_exit(self, result):
-        # apply changes, check for permission, submit result and exit
+    def end_transaction_exit(self):
+        # apply changes, check for permission and end program
+        server.run = False # Stops server
         pass
-
-    def return_error(self, msg):
-        # return {"status":"msg"} to client and rollback
-        pass
-
 
     def create_principal(self, username, password):
         self.apply_permissions(

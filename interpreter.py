@@ -45,8 +45,7 @@ class Interpreter(object):
                     raise ValueError("Unsupported command was provided")
 
         except RuntimeError as err:
-            self.controller.return_error(err.args[0])
-            pass
+            return _status json(err.args[0])
         return self.result
 
     def _parse_expr(self, parser):
