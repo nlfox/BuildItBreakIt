@@ -28,7 +28,8 @@ class Lexer(object):
         'write': 'RIGHT',
         'append': 'RIGHT',
         'delegate': 'RIGHT',
-        'date' : 'DATE'
+        'date' : 'DATE',
+        'password' : "PASSWORD"
     }
 
     # List of token names.   This is always required
@@ -141,6 +142,7 @@ class Lexer(object):
         '''Removes and returns first element, or throws an error if types do not match'''
         next_token = self.next()
         if next_token.type not in args:
+            print "expected " + str(args) + " but got " + next_token.type
             raise RuntimeError("FAILED")
         return next_token
 

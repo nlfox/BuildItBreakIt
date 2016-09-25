@@ -119,7 +119,8 @@ class Controller:
             )
 
     def delete_delegation(self, field, authority, permission, user):
-        self.apply_permission(
+        pass
+        #self.apply_permission(
             
 
     def default_delegator(self, user):

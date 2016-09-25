@@ -35,12 +35,13 @@ class Interpreter(object):
                 token = parser.expect("COMMAND")
 
                 try:
+                    print token.value
                     getattr(self, "_" + "_".join(token.value.split(" ")))(parser)
                 except AttributeError:
                     raise ValueError("Unsupported command was provided")
 
         except RuntimeError as err:
-            return _status json(err.args[0])
+            return self._status_json(err.args[0])
         return self.result
 
     def _parse_expr(self, parser):
