@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+from permissions import SecurityState
 
 class Store:
     def __init__(self):
@@ -8,6 +9,8 @@ class Store:
         self.fieldsPatch = {}
         self.usersPatch = {}
         self.local = {}
+
+        self.S = SecurityState()
 
     def __str__(self):
         s = ""
@@ -39,11 +42,11 @@ class Store:
     def modify_principal(self, username, password):
         self.usersPatch[username] = password
 
-    # TODO: all of this needs to be reworked
     def has_permission(self, username, label, transactionType):
         if not self.field_exists(label):
             return True
-        pass
+
+        return self.S.has_permission(username, label, transactionType)
     
     def check_password(self, username, password):
         return username in self.users and password == self.users[username]
@@ -128,9 +131,9 @@ class Store:
         return self.field_exists(field.split('.')[0])
 
     def set_delegation(self, field, authority, permission, user):
-        pass
+        self.S.set_delegation(field, authority, permission, user)
 
     def delete_delegation(self, field, authority, permission, user):
-        pass
+        self.S.delete_delegation(field, authority, permission, user)
 
     
