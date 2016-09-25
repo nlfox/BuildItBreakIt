@@ -1,17 +1,16 @@
-#!/usr/bin/python           # This is server.py file
+#!/usr/bin/python
 
-import socket               # Import socket module
+import socket
+host = ''
+port = 12345
 
-s = socket.socket()         # Create a socket object
-host = '' # Get local machine name
-port = 12345               # Reserve a port for your service.
+testfile = open("tests.txt", "r")
+request = ""
+for line in testfile:
+    request += line
 
+s = socket.socket()
 s.connect((host,port))
-s.send(
-"""as principal admin password "admin" do
-local s = "abc"
-return s
-***
-""")
+s.send(request)
 print s.recv(1024)
 s.close
