@@ -72,7 +72,7 @@ class Lexer(object):
     # This position has the highest priority
     # TODO: add more command
     def t_COMMAND(self, t):
-        r'create\ +principal|change\ +password|append\ +to|set\ +delegation|delete\ +delegation|default\ +delegator'
+        r'create\ +principal|change\ +password|append\ +to|set|set\ +delegation|delete\ +delegation|default\ +delegator'
         t.value = " ".join(t.value.split())
         return t
 
@@ -160,11 +160,11 @@ class Lexer(object):
 
 # Test it out
 data = '''
-as principal admin password "admin" do \n
-set records = [] \n
-append to records with { name = "mike", date = "1-1-90" } \n
-filtereach rec in records with equal(rec.date, "1-1-90") \n
-return records \n
+as principal admin password "admin" do
+set records = []
+append to records with { name = "mike", date = "1-1-90" }
+filtereach rec in records with equal(rec.date, "1-1-90")
+return records
 ***
 '''
 
