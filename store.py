@@ -83,13 +83,13 @@ class Store:
 
         return False
 
-    def field_exists(self, label):
+    def field_exists(self, label, local=True):
         tags = label.split('.')
 
         if len(tags) == 1:
             return tags[0] in self.local.keys() or tags[0] in self.fields.keys() or tags[0] in self.fieldsPatch.keys()
         else:
-            if tags[0] in self.local.keys():
+            if local and tags[0] in self.local.keys():
                 return type(self.local[tags[0]]) == dict and tags[1] in self.local[tags[0]]
             elif tags[0] in self.fieldsPatch.keys():
                 return type(self.fieldsPatch[tags[0]]) == dict and tags[1] in self.fieldsPatch[tags[0]]
@@ -132,8 +132,8 @@ class Store:
         if field in self.local:
             del self.local[field]
 
-    def shallow_field_exists(self, field):
-        return self.field_exists(field.split('.')[0])
+    def global_field_exists(self, field):
+        return self.field_exists(field.split('.')[0], local=False)
 
     def set_delegation(self, field, authority, permission, user):
         self.S.set_delegation(field, authority, permission, user)

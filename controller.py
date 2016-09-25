@@ -116,7 +116,7 @@ class Controller:
             self.store.has_permission(authority, field, "delegate"),
 
             # TODO: exists here should only hit global fields
-            self.store.shallow_field_exists(field) and
+            self.store.global_field_exists(field) and
             self.store.user_exists(user) and
             self.store.user_exists(authority),
 
