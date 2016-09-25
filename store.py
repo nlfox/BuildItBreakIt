@@ -33,15 +33,18 @@ class Store:
         self.usersPatch = {}
         self.local = {}
         self.principal = principal
+        self.S.begin_transaction()
 
     def discard_transaction(self):
         self.fieldsPatch = {}
         self.usersPatch = {}
         self.local = {}
+        self.S.discard_transaction()
 
     def complete_transaction(self):
         self.users.update(self.usersPatch)
         self.fields.update(self.fieldsPatch)
+        self.S.complete_transaction()
 
     def modify_principal(self, username, password):
         if username not in self.users and username not in self.usersPatch:
