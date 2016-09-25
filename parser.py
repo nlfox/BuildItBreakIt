@@ -42,7 +42,8 @@ class Lexer(object):
                  'TERMINATOR',
                  'SQUBRACKETS',
                  'ID_GROUP',
-                 'PROG'
+                 'PROG',
+                 'NEWLINE'
              ] + list(reserved.values())
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
@@ -87,9 +88,10 @@ class Lexer(object):
         return t
 
     # Define a rule so we can track line numbers
-    def t_newline(self, t):
-        r'\n+'
+    def t_NEWLINE(self, t):
+        r'\n'
         t.lexer.lineno += len(t.value)
+        return t
 
     def t_STRING(self, t):
         r'"[A-Za-z0-9_ ,;\.?!-]*"'

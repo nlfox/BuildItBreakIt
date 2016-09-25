@@ -30,17 +30,12 @@ class Interpreter(object):
         self.flag = True
         try:
             self._auth(parser)
-            expected_line = 2
             while self.flag:
+                parser.expect("NEWLINE")
                 token = parser.expect("COMMAND")
-                if token.lineno != expected_line:
-                    raise RuntimeError("FAILED")
-                expected_line = expected_line + 1
 
-                cmd = token.value
                 try:
-                    # dispatch method to each func
-                    getattr(self, "_" + "_".join(cmd.split(" ")))(parser)
+                    getattr(self, "_" + "_".join(token.value.split(" ")))(parser)
                 except AttributeError:
                     raise ValueError("Unsupported command was provided")
 
