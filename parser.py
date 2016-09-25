@@ -151,22 +151,3 @@ class Lexer(object):
         self.lexer = lex.lex(module=self, errorlog=lex.NullLogger(), **kwargs)
         self.gen = self._initGen()
         pass
-
-
-# Test it out
-data = '''inin        all
-as principaladmin password "admin" do
-setrecords=[]localx
-append to records with { name = "mike", date = "1-1-90" }
-filtereach rec in records with equal(rec.date, "1-1-90")
-return records
-***
-'''
-
-# OUTPUT:
-# PARSE: LexToken(AS, 'as',...)
-
-m = Lexer(data)
-
-for i in m.gen:
-    print (i)
