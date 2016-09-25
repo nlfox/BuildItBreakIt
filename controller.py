@@ -64,7 +64,7 @@ class Controller:
         value = self._parse_expression(expression)
         self.apply_permissions(
             self.store.has_permission(self.principal, field, "write"),
-            True,
+            self._is_field(field),
             lambda self: self.store.set_field(field, value)
             )
 
@@ -73,8 +73,11 @@ class Controller:
         value = self._parse_expression(expression)
         self.apply_permissions(
             self.store.has_permission(self.principal, field, "append"),
+            
             self.store.field_exists(field) and
-            self.store.field_type(field) == list,
+            self.store.field_type(field) == list and
+            self._is_field(field),
+            
             lambda self: self.store.append_to(field, value)
             )
 
@@ -82,7 +85,10 @@ class Controller:
         value = self._parse_expression(expression)
         self.apply_permissions(
             True,
-            not self.store.field_exists(field),
+            
+            not self.store.field_exists(field) and
+            self._is_field(field),
+            
             lambda self: self.store.set_local(field, value)
             )
 
@@ -103,22 +109,22 @@ class Controller:
 
             self.store.field_exists(field) and
             self.store.field_type(field) == list and
-            not self.store.field_exists(iterator),
+            not self.store.field_exists(iterator) and
+            self._is_field(iterator) and
+            self._is_field(field),
 
             action
             )
 
-
-    # TODO: figure out conditions for anyone and all
     def set_delegation(self, field, authority, permission, user):
         self.apply_permissions(
             (self.principal == "admin" or self.principal == authority) and
             self.store.has_permission(authority, field, "delegate"),
 
-            # TODO: exists here should only hit global fields
             self.store.global_field_exists(field) and
             self.store.user_exists(user) and
-            self.store.user_exists(authority),
+            self.store.user_exists(authority) and
+            self._is_field(field),
 
             lambda self: self.store.set_delegation(field, authority, permission, user)
             )
@@ -131,13 +137,18 @@ class Controller:
 
             self.store.shallow_field_exists(field) and
             self.store.user_exists(user) and
-            self.store.user_exists(authority),
+            self.store.user_exists(authority) and
+            self._is_field(field),
 
             lambda self: self.store.delete_delegation(field, authority, permission, user)
             )
 
     def default_delegator(self, user):
         pass
+
+    # Used to make sure identifiers are fields and not attributes
+    def _is_field(self, field):
+        return field.count('.') == 1
 
     def _parse_expression(self, expression):
         if type(expression) == str:
