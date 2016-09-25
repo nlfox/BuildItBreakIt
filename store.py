@@ -46,11 +46,7 @@ class Store:
         pass
     
     def check_password(self, username, password):
-        for user in self.users:
-            if user.name == username and user.password == password:
-                return True
-            
-        return False
+        return username in self.users and password == self.users[username]
 
     def get_field(self, label):
         if not self.field_exists(label):
@@ -74,13 +70,11 @@ class Store:
                 return self.fields[labellist[0]][labellist[1]]
 
     def user_exists(self, username):
-        for user in self.usersPatch:
-            if user.name == username:
-                return True
+        if username in self.usersPatch:
+            return True
         
-        for user in self.users:
-            if user.name == username:
-                return True
+        if username in self.users:
+            return True
 
         return False
 
