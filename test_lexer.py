@@ -15,7 +15,7 @@ data = '''inin        all
 class TestLexer(TestCase):
     def test_space(self):
         data = """
-            as prinipal admin "asasasa" do sasasa
+            as prinipal admin     "asasasa" do sasasa
         """
         print [[i.value, i.type] for i in Lexer(data).gen]
         self.assertListEqual([[i.value, i.type] for i in Lexer(data).gen],
