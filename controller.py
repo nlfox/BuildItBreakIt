@@ -30,8 +30,7 @@ class Controller:
         self.store.begin_transaction()
 
     def end_transaction(self):
-        # apply changes
-        pass
+        self.store.complete_transaction()
 
     def end_transaction_exit(self):
         # apply changes, check for permission and end program
@@ -116,6 +115,7 @@ class Controller:
             (self.principal == "admin" or self.principal == authority) and
             self.store.has_permission(authority, field, "delegate"),
 
+            # TODO: exists here should only hit global fields
             self.store.shallow_field_exists(field) and
             self.store.user_exists(user) and
             self.store.user_exists(authority),
