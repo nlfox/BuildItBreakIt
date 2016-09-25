@@ -2,6 +2,7 @@
 
 from store import Store
 import ply.lex as lex
+from ply.lex import LexToken
 
 class Controller:
 
@@ -56,9 +57,7 @@ class Controller:
         if type(token) is dict:
             return token
         else:
-            #todo: parse ID_GROUP STRING
-            pass
-        pass
+            self._parse_value(token)
 
     def set(self, field, expression):
         value = self._parse_expression(expression)
@@ -73,11 +72,11 @@ class Controller:
         value = self._parse_expression(expression)
         self.apply_permissions(
             self.store.has_permission(self.principal, field, "append"),
-            
+
             self.store.field_exists(field) and
             self.store.field_type(field) == list and
             self._is_field(field),
-            
+
             lambda self: self.store.append_to(field, value)
             )
 
@@ -85,10 +84,10 @@ class Controller:
         value = self._parse_expression(expression)
         self.apply_permissions(
             True,
-            
+
             not self.store.field_exists(field) and
             self._is_field(field),
-            
+
             lambda self: self.store.set_local(field, value)
             )
 
@@ -169,13 +168,13 @@ class Controller:
     def _parse_expression(self, expression):
         if type(expression) == str:
             return expression
-        
+
         elif type(expression) == list:
             if len(expression) > 0:
                 raise RuntimeError("FAILED")
             else:
                 return []
-            
+
         elif type(expression) == dict:
             resolved_dict = {}
             for key in expression.keys():
