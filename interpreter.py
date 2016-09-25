@@ -33,7 +33,6 @@ class Interpreter(object):
             while self.flag:
                 parser.expect("NEWLINE")
                 token = parser.expect("COMMAND")
-
                 try:
                     print token.value
                     getattr(self, "_" + "_".join(token.value.split(" ")))(parser)
@@ -137,6 +136,7 @@ class Interpreter(object):
         self.result += self._status_json("DEFAULT_DELEGATOR")
 
     def _exit(self, parser):
+        parser.expect("NEWLINE")
         parser.expect("TERMINATOR")
         for operation in self.operation_queue:
             operation()
@@ -145,7 +145,8 @@ class Interpreter(object):
         self.flag = False
 
     def _return(self, parser):
-        return_value = parser.expect(*EXPR)
+        return_value = self._parse_expr(parser)
+        parser.expect("NEWLINE")
         parser.expect("TERMINATOR")
         for operation in self.operation_queue:
             operation()

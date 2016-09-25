@@ -1,9 +1,11 @@
 #!/usr/bin/python2
 
 from store import Store
+import ply.lex as lex
+from ply.lex import LexToken
 
 class Controller:
-    
+
     def __init__(self, store, server):
         self.principal = ""
         self.store = store
@@ -12,7 +14,7 @@ class Controller:
     def apply_permissions(self, access_criterion, success_criterion, action):
         if access_criterion:
             if success_criterion:
-                action(self)
+                return action(self)
             else:
                 raise RuntimeError("FAILED")
         else:
@@ -21,20 +23,19 @@ class Controller:
     def begin_transaction(self, principal, password):
         if not self.store.user_exists(principal):
             raise RuntimeError("FAILED")
-        
+
         if not self.store.check_password(principal, password):
             raise RuntimeError("DENIED")
-            
+
         self.principal = principal
-        self.store.begin_transaction()
+        self.store.begin_transaction(principal)
 
     def end_transaction(self):
-        # apply changes
-        pass
+        self.store.complete_transaction()
 
     def end_transaction_exit(self):
         # apply changes, check for permission and end program
-        server.run = False # Stops server
+        self.server.run = False # Stops server
         pass
 
     def create_principal(self, username, password):
@@ -53,23 +54,29 @@ class Controller:
 
     def get_value(self, token):
         # evaluate token value and return that
-        pass
+        if type(token) is dict:
+            return token
+        else:
+            self._parse_value(token)
 
     def set(self, field, expression):
         value = self._parse_expression(expression)
         self.apply_permissions(
             self.store.has_permission(self.principal, field, "write"),
-            True,
+            self._is_field(field),
             lambda self: self.store.set_field(field, value)
             )
-            
+
 
     def append_to(self, field, expression):
         value = self._parse_expression(expression)
         self.apply_permissions(
             self.store.has_permission(self.principal, field, "append"),
+
             self.store.field_exists(field) and
-            self.store.field_type(field) == list,
+            self.store.field_type(field) == list and
+            self._is_field(field),
+
             lambda self: self.store.append_to(field, value)
             )
 
@@ -77,7 +84,10 @@ class Controller:
         value = self._parse_expression(expression)
         self.apply_permissions(
             True,
-            not self.store.field_exists(field),
+
+            not self.store.field_exists(field) and
+            self._is_field(field),
+
             lambda self: self.store.set_local(field, value)
             )
 
@@ -98,35 +108,94 @@ class Controller:
 
             self.store.field_exists(field) and
             self.store.field_type(field) == list and
-            not self.store.field_exists(iterator),
+            not self.store.field_exists(iterator) and
+            self._is_field(iterator) and
+            self._is_field(field),
 
             action
             )
-        
 
-    # TODO: figure out conditions for anyone and all
     def set_delegation(self, field, authority, permission, user):
         self.apply_permissions(
             (self.principal == "admin" or self.principal == authority) and
-            self.store.has_permission(authority, field, "delegate") and
-            self.store.has_permission(authority, field, permission),
+            (self.store.has_permission(authority, field, "delegate") or
+             field == "all"),
 
-            self.store.field_exists(field) and
+            (self.store.global_field_exists(field) or field == "all") and
             self.store.user_exists(user) and
-            self.store.user_exists(authority),
+            self.store.user_exists(authority) and
+            self._is_field(field),
 
             lambda self: self.store.set_delegation(field, authority, permission, user)
             )
 
     def delete_delegation(self, field, authority, permission, user):
-        pass
-        #self.apply_permission(
-            
+        self.apply_permissions(
+            ((self.principal == "admin" or self.principal == authority) and
+             (self.store.has_permission(authority, field, "delegate") or field == "all")) or
+            (self.principal == user and field != "all"),
+
+            self.store.shallow_field_exists(field) and
+            self.store.user_exists(user) and
+            self.store.user_exists(authority) and
+            self._is_field(field),
+
+            lambda self: self.store.delete_delegation(field, authority, permission, user)
+            )
+
+    def get_field(self, field):
+        return self.apply_permissions(
+            self.store.has_permission(self.principal, field, "read"),
+
+            self.store.field_exists(field),
+
+            lambda self: self.store.get_field(field)
+            )
 
     def default_delegator(self, user):
-        pass
+        self.apply_permissions(
+            self.principal == "admin",
+
+            self.store.user_exists(user),
+
+            lambda self: self.store.set_default(user)
+            )
+
+    # Used to make sure identifiers are fields and not attributes
+    def _is_field(self, field):
+        return field.count('.') == 0
 
     def _parse_expression(self, expression):
-        pass
+        if type(expression) == str:
+            return expression
+
+        elif type(expression) == list:
+            if len(expression) > 0:
+                raise RuntimeError("FAILED")
+            else:
+                return []
+
+        elif type(expression) == dict:
+            resolved_dict = {}
+            for key in expression.keys():
+                resolved_dict[key] = self._parse_value(expression[key])
+
+            return resolved_dict
+
+    def _parse_value(self, value):
+        if type(value) == str:
+            return value
+
+        elif type(value) == LexToken:
+            if value.type == "ID" or value.type == "ID_GROUP":
+                if self.store.has_permission(self.principal, value.value):
+                    if self.store.field_exists(value.value):
+                        return self.store.get_field(value.value)
+                    else:
+                        raise RuntimeError("FAILED")
+                else:
+                    raise RuntimeError("DENIED")
+            else:
+                raise RuntimeError("Unknown token type")
 
 # has_permission should return true if the field doesn't exist

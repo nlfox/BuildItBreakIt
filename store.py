@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+from permissions import SecurityState
 
 class Store:
     def __init__(self):
@@ -7,55 +8,141 @@ class Store:
 
         self.fieldsPatch = {}
         self.usersPatch = {}
+        self.local = {}
 
-    def begin_transaction(self):
+        self.S = SecurityState()
+        self.principal = ""
+
+    def __str__(self):
+        s = ""
+        s += "Local:\n"
+        s += str(self.local)
+        s += "\nusersPatch:\n"
+        s += str(self.usersPatch)
+        s += "\nfieldsPatch:\n"
+        s += str(self.fieldsPatch)
+        s += "\nusers:\n"
+        s += str(self.users)
+        s += "\nfields:\n"
+        s += str(self.fields)
+        s += "\n"
+        return s
+
+    def begin_transaction(self, principal):
         self.fieldsPatch = {}
         self.usersPatch = {}
+        self.local = {}
+        self.principal = principal
+
+    def discard_transaction(self):
+        self.begin_transaction()
+
+    def complete_transaction(self):
+        self.users.update(self.usersPatch)
+        self.fields.update(self.fieldsPatch)
 
     def modify_principal(self, username, password):
+        if username not in self.users and username not in self.usersPatch:
+            self.S.add_user(username)
+            
         self.usersPatch[username] = password
 
     def has_permission(self, username, label, transactionType):
-        label = label.split()[0]
+        if not self.field_exists(label):
+            return True
 
-        if label in self.fields.keys():
-            return username in self.fields[label][transactionType]
-        elif label in self.fieldsPatch.keys():
-            return username in self.fieldsPatch[label][transactionType]
-
+        return self.S.has_permission(username, label, transactionType)
+    
     def check_password(self, username, password):
-        for user in self.users:
-            if user.name == username and user.password == password:
-                return True
-
-        for user in self.usersPatch:
-            if user.name == username and user.password == password:
-                return True
-            
-        return False
+        return username in self.users and password == self.users[username]
 
     def get_field(self, label):
+        if not self.field_exists(label):
+            return ""
+        
         labellist = label.split('.')
         if len(labellist) == 1:
-            return self.fields[labellist[0]]["value"]
+            if labellist[0] in self.local.keys():
+                return self.local[labellist[0]]
+            elif labellist[0] in self.fieldsPatch.keys():
+                return self.fieldsPatch[labellist[0]]
+            else:
+                return self.fields[labellist[0]]
+            
         elif len(labellist) == 2:
-            return self.fields[labellist[0]]["value"][labellist[1]]
+            if labellist[0] in self.local.keys():
+                return self.local[labellist[0]][labellist[1]]
+            elif labellist[0] in self.fieldsPatch.keys():
+                return self.fieldsPatch[labellist[0]][labellist[1]]
+            else:
+                return self.fields[labellist[0]][labellist[1]]
 
     def user_exists(self, username):
-        for user in self.usersPatch:
-            if user.name == username:
-                return True
+        if username in self.usersPatch:
+            return True
         
-        for user in self.users:
-            if user.name == username:
-                return True
+        if username in self.users:
+            return True
 
         return False
 
-    def field_exists(self, label):
+    def field_exists(self, label, local=True):
         tags = label.split('.')
 
         if len(tags) == 1:
-            return tags[0] in this.fields.keys() or tags[0] in this.fieldsPatch.keys()
+            return tags[0] in self.local.keys() or tags[0] in self.fields.keys() or tags[0] in self.fieldsPatch.keys()
         else:
-            return tags[1] in this.fields[tags[0]]["value"].keys() or tags[1] in this.fieldsPatch[tags[0]]["value"].keys()
+            if local and tags[0] in self.local.keys():
+                return type(self.local[tags[0]]) == dict and tags[1] in self.local[tags[0]]
+            elif tags[0] in self.fieldsPatch.keys():
+                return type(self.fieldsPatch[tags[0]]) == dict and tags[1] in self.fieldsPatch[tags[0]]
+            elif tags[0] in self.fields.keys():
+                return type(self.fields[tags[0]]) == dict and tags[1] in self.fields[tags[0]]
+            else:
+                return False
+
+    def field_type(self, field):
+        if not self.field_exists(field):
+            return None
+        
+        tags = field.split(".")
+        if tags[0] in self.local.keys():
+            if len(tags) == 1:
+                return type(self.local[tags[0]])
+            else:
+                return type(self.local[tags[0]][tags[1]])
+        elif tags[0] in self.fieldsPatch.keys():
+            if len(tags) == 1:
+                return type(self.fieldsPatch[tags[0]])
+            else:
+                return type(self.fieldsPatch[tags[0]][tags[1]])
+        elif tags[0] in self.fields.keys():
+            if len(tags) == 1:
+                return type(self.fields[tags[0]])
+            else:
+                return type(self.fieldsPatch[tags[0]][tags[1]])
+
+    def set_field(self, field, value):
+        if not self.field_exists(field):
+            self.S.own(self.principal, field)
+            
+        self.fieldsPatch[field] = value
+
+    def set_local(self, field, value):
+        self.local[field] = value
+
+    def remove_local(self, field):
+        if field in self.local:
+            del self.local[field]
+
+    def global_field_exists(self, field):
+        return self.field_exists(field.split('.')[0], local=False)
+
+    def set_delegation(self, field, authority, permission, user):
+        self.S.set_delegation(field, authority, permission, user)
+
+    def delete_delegation(self, field, authority, permission, user):
+        self.S.delete_delegation(field, authority, permission, user)
+
+    def set_default(self, user):
+        self.S.set_default(user)
