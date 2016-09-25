@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+from permissions import SecurityState
 
 class Store:
     def __init__(self):
@@ -8,6 +9,8 @@ class Store:
         self.fieldsPatch = {}
         self.usersPatch = {}
         self.local = {}
+
+        self.S = SecurityState()
 
     def __str__(self):
         s = ""
@@ -39,18 +42,14 @@ class Store:
     def modify_principal(self, username, password):
         self.usersPatch[username] = password
 
-    # TODO: all of this needs to be reworked
     def has_permission(self, username, label, transactionType):
         if not self.field_exists(label):
             return True
-        pass
+
+        return self.S.has_permission(username, label, transactionType)
     
     def check_password(self, username, password):
-        for user in self.users:
-            if user.name == username and user.password == password:
-                return True
-            
-        return False
+        return username in self.users and password == self.users[username]
 
     def get_field(self, label):
         if not self.field_exists(label):
@@ -74,13 +73,11 @@ class Store:
                 return self.fields[labellist[0]][labellist[1]]
 
     def user_exists(self, username):
-        for user in self.usersPatch:
-            if user.name == username:
-                return True
+        if username in self.usersPatch:
+            return True
         
-        for user in self.users:
-            if user.name == username:
-                return True
+        if username in self.users:
+            return True
 
         return False
 
@@ -134,9 +131,9 @@ class Store:
         return self.field_exists(field.split('.')[0])
 
     def set_delegation(self, field, authority, permission, user):
-        pass
+        self.S.set_delegation(field, authority, permission, user)
 
     def delete_delegation(self, field, authority, permission, user):
-        pass
+        self.S.delete_delegation(field, authority, permission, user)
 
     
