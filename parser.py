@@ -6,6 +6,7 @@
 # ------------------------------------------------------------
 import ply.lex as lex
 
+
 class Lexer(object):
     # Regular expression rules for simple tokens
     reserved = {
@@ -15,22 +16,16 @@ class Lexer(object):
         '}': 'RCURLYPAREN',
         ',': 'COMMA',
         'do': 'DO',
-        'exit': 'EXIT',
-        'return': 'RETURN',
-        'password' : 'PASSWORD',
-        'set': 'SET',
         'to': 'TO',
         'with': 'WITH',
-        'local': 'LOCAL',
-        'foreach': 'FOREACH',
         'in': 'IN',
         'replacewith': 'REPLACEWITH',
         'read': 'RIGHT',
         'write': 'RIGHT',
         'append': 'RIGHT',
         'delegate': 'RIGHT',
-        'date' : 'DATE',
-        'password' : "PASSWORD"
+        'date': 'DATE',
+        'password': "PASSWORD"
     }
 
     # List of token names.   This is always required
@@ -55,13 +50,8 @@ class Lexer(object):
     t_EQUAL = r'='
     t_COMMA = r','
     t_DO = r'do'
-    t_EXIT = r'exit'
-    t_RETURN = r'return'
-    t_SET = r'set'
     t_TO = r'to'
     t_WITH = r'with'
-    t_LOCAL = r'local'
-    t_FOREACH = r'foreach'
     t_IN = r'in'
     t_PASSWORD = r'password'
     t_REPLACEWITH = r'replacewith'
@@ -73,7 +63,7 @@ class Lexer(object):
     # This position has the highest priority
     # TODO: add more command
     def t_COMMAND(self, t):
-        r'create\ +principal|change\ +password|append\ +to|set|set\ +delegation|delete\ +delegation|default\ +delegator'
+        r'create\ +principal|change\ +password|append\ +to|set|set\ +delegation|delete\ +delegation|default\ +delegator|local|return|exit|foreach'
         t.value = " ".join(t.value.split())
         return t
 
@@ -94,7 +84,7 @@ class Lexer(object):
 
     # Define a rule so we can track line numbers
     def t_NEWLINE(self, t):
-        r'\n'
+        r'\r\n|\n'
         t.lexer.lineno += len(t.value)
         return t
 
@@ -155,7 +145,7 @@ class Lexer(object):
 
     def __init__(self, data="", **kwargs):
         self.data = data
-        self.lexer = lex.lex(module=self,errorlog=lex.NullLogger(), **kwargs)
+        self.lexer = lex.lex(module=self, errorlog=lex.NullLogger(), **kwargs)
         self.gen = self._initGen()
         pass
 

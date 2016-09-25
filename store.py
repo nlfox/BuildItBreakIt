@@ -53,6 +53,11 @@ class Store:
         if not self.field_exists(label):
             return True
 
+        labellist = label.split('.')
+        var = labellist[0]
+        if var in self.local.keys():
+            return True
+
         return self.S.has_permission(username, label, transactionType)
     
     def check_password(self, username, password):
@@ -65,7 +70,8 @@ class Store:
         labellist = label.split('.')
         if len(labellist) == 1:
             if labellist[0] in self.local.keys():
-                return self.local[labellist[0]]
+                val = self.local[labellist[0]]
+                return val
             elif labellist[0] in self.fieldsPatch.keys():
                 return self.fieldsPatch[labellist[0]]
             else:
