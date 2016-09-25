@@ -100,7 +100,7 @@ class Lexer(object):
         return t
 
     # A string containing ignored characters (spaces and tabs)
-    t_ignore = ' \t'
+    t_ignore = ' '
 
     # Error handling rule
     def t_error(self, t):
@@ -141,7 +141,9 @@ class Lexer(object):
         return next_token
 
     def next(self):
-        return self.gen.next()
+        next = self.gen.next()
+        print next
+        return next
 
     def __init__(self, data="", **kwargs):
         self.data = data
