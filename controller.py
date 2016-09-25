@@ -3,7 +3,7 @@
 from store import Store
 
 class Controller:
-    
+
     def __init__(self, store, server):
         self.principal = ""
         self.store = store
@@ -21,10 +21,10 @@ class Controller:
     def begin_transaction(self, principal, password):
         if not self.store.user_exists(principal):
             raise RuntimeError("FAILED")
-        
+
         if not self.store.check_password(principal, password):
             raise RuntimeError("DENIED")
-            
+
         self.principal = principal
         self.store.begin_transaction()
 
@@ -53,6 +53,11 @@ class Controller:
 
     def get_value(self, token):
         # evaluate token value and return that
+        if type(token) is dict:
+            return token
+        else:
+            #todo: parse ID_GROUP STRING
+            pass
         pass
 
     def set(self, field, expression):
@@ -62,7 +67,7 @@ class Controller:
             True,
             lambda self: self.store.set_field(field, value)
             )
-            
+
 
     def append_to(self, field, expression):
         value = self._parse_expression(expression)
@@ -102,7 +107,7 @@ class Controller:
 
             action
             )
-        
+
 
     # TODO: figure out conditions for anyone and all
     def set_delegation(self, field, authority, permission, user):
@@ -120,7 +125,7 @@ class Controller:
 
     def delete_delegation(self, field, authority, permission, user):
         self.apply_permission(
-            
+
 
     def default_delegator(self, user):
         pass

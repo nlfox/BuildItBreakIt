@@ -33,14 +33,13 @@ class Interpreter(object):
             while self.flag:
                 parser.expect("NEWLINE")
                 token = parser.expect("COMMAND")
-
                 try:
                     getattr(self, "_" + "_".join(token.value.split(" ")))(parser)
                 except AttributeError:
                     raise ValueError("Unsupported command was provided")
 
         except RuntimeError as err:
-            return _status json(err.args[0])
+            return self._status_json(err.args[0])
         return self.result
 
     def _parse_expr(self, parser):
@@ -136,6 +135,7 @@ class Interpreter(object):
         self.result += self._status_json("DEFAULT_DELEGATOR")
 
     def _exit(self, parser):
+        parser.expect("NEWLINE")
         parser.expect("TERMINATOR")
         for operation in self.operation_queue:
             operation()
@@ -144,7 +144,8 @@ class Interpreter(object):
         self.flag = False
 
     def _return(self, parser):
-        return_value = parser.expect(*EXPR)
+        return_value = self._parse_expr(parser)
+        parser.expect("NEWLINE")
         parser.expect("TERMINATOR")
         for operation in self.operation_queue:
             operation()
