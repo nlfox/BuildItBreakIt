@@ -42,6 +42,9 @@ class Store:
         self.fields.update(self.fieldsPatch)
 
     def modify_principal(self, username, password):
+        if username not in self.users and username not in self.usersPatch:
+            self.S.add_user(username)
+            
         self.usersPatch[username] = password
 
     def has_permission(self, username, label, transactionType):

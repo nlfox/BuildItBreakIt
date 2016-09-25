@@ -13,7 +13,7 @@ class Controller:
     def apply_permissions(self, access_criterion, success_criterion, action):
         if access_criterion:
             if success_criterion:
-                action(self)
+                return action(self)
             else:
                 raise RuntimeError("FAILED")
         else:
@@ -119,9 +119,10 @@ class Controller:
     def set_delegation(self, field, authority, permission, user):
         self.apply_permissions(
             (self.principal == "admin" or self.principal == authority) and
-            self.store.has_permission(authority, field, "delegate"),
+            (self.store.has_permission(authority, field, "delegate") or
+             field == "all"),
 
-            self.store.global_field_exists(field) and
+            (self.store.global_field_exists(field) or field == "all") and
             self.store.user_exists(user) and
             self.store.user_exists(authority) and
             self._is_field(field),
@@ -130,10 +131,10 @@ class Controller:
             )
 
     def delete_delegation(self, field, authority, permission, user):
-        self.apply_permission(
-            self.principal == "admin" or
-            (self.principal == authority and self.store.has_permission(authority, field, "delegate")) or
-            self.principal == user,
+        self.apply_permissions(
+            ((self.principal == "admin" or self.principal == authority) and
+             (self.store.has_permission(authority, field, "delegate") or field == "all")) or
+            (self.principal == user and field != "all"),
 
             self.store.shallow_field_exists(field) and
             self.store.user_exists(user) and
@@ -143,12 +144,21 @@ class Controller:
             lambda self: self.store.delete_delegation(field, authority, permission, user)
             )
 
+    def get_field(self, field):
+        return self.apply_permissions(
+            self.store.has_permission(self.principal, field, "read"),
+
+            self.store.field_exists(field),
+
+            lambda self: self.store.get_field(field)
+            )
+
     def default_delegator(self, user):
         pass
 
     # Used to make sure identifiers are fields and not attributes
     def _is_field(self, field):
-        return field.count('.') == 1
+        return field.count('.') == 0
 
     def _parse_expression(self, expression):
         if type(expression) == str:
