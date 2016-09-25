@@ -10,11 +10,6 @@ import ply.lex as lex
 class Lexer(object):
     # Regular expression rules for simple tokens
     reserved = {
-        '=': 'EQUAL',
-        '->': 'ARROW',
-        '{': 'LCURLYPAREN',
-        '}': 'RCURLYPAREN',
-        ',': 'COMMA',
         'do': 'DO',
         'to': 'TO',
         'with': 'WITH',
@@ -25,13 +20,15 @@ class Lexer(object):
         'append': 'RIGHT',
         'delegate': 'RIGHT',
         'date': 'DATE',
-        'password': "PASSWORD"
+        'password': "PASSWORD",
+        'all': "ALL",
     }
 
     # List of token names.   This is always required
     tokens = [
                  'ID',
                  'NUMBER',
+                 'COMMA',
                  'LPAREN',
                  'RPAREN',
                  'STRING',
@@ -40,7 +37,11 @@ class Lexer(object):
                  'SQUBRACKETS',
                  'ID_GROUP',
                  'PROG',
-                 'NEWLINE'
+                 'NEWLINE',
+                 'EQUAL',
+                 'ARROW',
+                 'LCURLYPAREN',
+                 'RCURLYPAREN',
              ] + list(reserved.values())
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
@@ -49,26 +50,26 @@ class Lexer(object):
     t_SQUBRACKETS = r'\[\]'
     t_EQUAL = r'='
     t_COMMA = r','
-    t_DO = r'do'
-    t_TO = r'to'
-    t_WITH = r'with'
-    t_IN = r'in'
-    t_PASSWORD = r'password'
-    t_REPLACEWITH = r'replacewith'
+    t_DO = r'\ {1,}do'
+    t_WITH = r'\ {1,}with\ {1,}'
+    t_IN = r'\ {1,}in\ {1,}'
+    t_PASSWORD = r'\ {1,}password\ {1,}'
+    t_REPLACEWITH = r'\ {1,}replacewith\ {1,}'
     t_ARROW = r'->'
     t_TERMINATOR = r'\*\*\*'
     t_DATE = r'date'
-    t_RIGHT = r'read|write|append|delegate'
+    t_RIGHT = r'\ {1,}(read|write|append|delegate)'
+    t_ALL = r'\ {1,}all\ {1,}'
 
     # This position has the highest priority
     # TODO: add more command
     def t_COMMAND(self, t):
-        r'create\ +principal|change\ +password|append\ +to|set|set\ +delegation|delete\ +delegation|default\ +delegator|local|return|exit|foreach'
+        r'(create\ +principal|change\ +password|append\ +to|set|set\ +delegation|delete\ +delegation|default\ +delegator|local|return|exit|foreach)\ {1,}'
         t.value = " ".join(t.value.split())
         return t
 
     def t_PROG(self, t):
-        r'as\ +principal'
+        r'as\ +principal{1,}'
         t.value = " ".join(t.value.split())
         return t
 
@@ -95,7 +96,7 @@ class Lexer(object):
         return t
 
     def t_ID(self, t):
-        r'[a-zA-Z_][a-zA-Z0-9]*'
+        r'[a-zA-Z_][a-zA-Z0-9]*(?!\")'
         t.type = self.reserved.get(t.value, 'ID')  # Check for reserved words
         return t
 
@@ -142,7 +143,7 @@ class Lexer(object):
 
     def next(self):
         next = self.gen.next()
-        print next # DEBUG
+        print next  # DEBUG
         return next
 
     def __init__(self, data="", **kwargs):
@@ -150,22 +151,3 @@ class Lexer(object):
         self.lexer = lex.lex(module=self, errorlog=lex.NullLogger(), **kwargs)
         self.gen = self._initGen()
         pass
-
-
-# Test it out
-data = '''
-as principal admin password "admin" do
-set records = []
-append to records with { name = "mike", date = "1-1-90" }
-filtereach rec in records with equal(rec.date, "1-1-90")
-return records
-***
-'''
-
-# OUTPUT:
-# PARSE: LexToken(AS, 'as',...)
-
-m = Lexer(data)
-
-for i in m.gen:
-    print (i)
