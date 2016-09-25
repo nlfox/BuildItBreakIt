@@ -17,6 +17,7 @@ class Lexer(object):
         'do': 'DO',
         'exit': 'EXIT',
         'return': 'RETURN',
+        'password' : 'PASSWORD',
         'set': 'SET',
         'to': 'TO',
         'with': 'WITH',
@@ -47,6 +48,8 @@ class Lexer(object):
              ] + list(reserved.values())
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
+    t_LCURLYPAREN = r'\{'
+    t_RCURLYPAREN = r'\}'
     t_SQUBRACKETS = r'\[\]'
     t_EQUAL = r'='
     t_COMMA = r','
@@ -59,6 +62,7 @@ class Lexer(object):
     t_LOCAL = r'local'
     t_FOREACH = r'foreach'
     t_IN = r'in'
+    t_PASSWORD = r'password'
     t_REPLACEWITH = r'replacewith'
     t_ARROW = r'->'
     t_TERMINATOR = r'\*\*\*'
@@ -156,7 +160,12 @@ class Lexer(object):
 
 # Test it out
 data = '''
-as  principal read write delegate append set  delegate admin  "as principle" u do  -> set xa.y = "1" [] *** exit as
+as principal admin password "admin" do \n
+set records = [] \n
+append to records with { name = "mike", date = "1-1-90" } \n
+filtereach rec in records with equal(rec.date, "1-1-90") \n
+return records \n
+***
 '''
 
 # OUTPUT:
@@ -165,4 +174,4 @@ as  principal read write delegate append set  delegate admin  "as principle" u d
 m = Lexer(data)
 
 for i in m.gen:
-    print i
+    print (i)
