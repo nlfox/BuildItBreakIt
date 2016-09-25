@@ -2,9 +2,9 @@
 from permissions import SecurityState
 
 class Store:
-    def __init__(self):
+    def __init__(self, admin_password):
         self.fields = {}
-        self.users = {}
+        self.users = {"admin": admin_password}
 
         self.fieldsPatch = {}
         self.usersPatch = {}
@@ -35,7 +35,9 @@ class Store:
         self.principal = principal
 
     def discard_transaction(self):
-        self.begin_transaction()
+        self.fieldsPatch = {}
+        self.usersPatch = {}
+        self.local = {}
 
     def complete_transaction(self):
         self.users.update(self.usersPatch)

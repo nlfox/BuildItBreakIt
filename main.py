@@ -15,7 +15,8 @@ def main():
     hostname = "localhost"
     port = args.port
 
-    store = Store()
+    store = Store(args.password)
+
     server = Server(hostname, port)
     controller = Controller(store, server)
     interpreter = Interpreter(controller)

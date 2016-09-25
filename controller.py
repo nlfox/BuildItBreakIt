@@ -11,22 +11,19 @@ class Controller:
         self.store = store
         self.server = server
 
-    def apply_permissions(self, access_criterion, success_criterion, action):
-        if access_criterion:
-            if success_criterion:
-                return action(self)
-            else:
-                raise RuntimeError("FAILED")
-        else:
+    def _assert_access(self, condition):
+        if not condition:
             raise RuntimeError("DENIED")
+        self.store.discard_transaction()
+
+    def _assert_success(self, condition):
+        if not condition:
+            raise RuntimeError("FAILED")
+        self.store.discard_transaction()
 
     def begin_transaction(self, principal, password):
-        if not self.store.user_exists(principal):
-            raise RuntimeError("FAILED")
-
-        if not self.store.check_password(principal, password):
-            raise RuntimeError("DENIED")
-
+        self._assert_access(self.store.user_exists(principal))
+        self._assert_success(self.store.check_password(principal, password))
         self.principal = principal
         self.store.begin_transaction(principal)
 
@@ -39,11 +36,9 @@ class Controller:
         pass
 
     def create_principal(self, username, password):
-        self.apply_permissions(
-            self.principal == "admin",
-            not self.store.user_exists(username),
-            lambda self: self.store.modify_principal(username, password)
-            )
+        self._assert_access(self.principal == "admin")
+        self._assert_success(not self.store.user_exists(username))
+        self.store.modify_principal(username, password)
 
     def change_password(self, username, password):
         self.apply_permissions(
