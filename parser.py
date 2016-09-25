@@ -10,11 +10,6 @@ import ply.lex as lex
 class Lexer(object):
     # Regular expression rules for simple tokens
     reserved = {
-        '=': 'EQUAL',
-        '->': 'ARROW',
-        '{': 'LCURLYPAREN',
-        '}': 'RCURLYPAREN',
-        ',': 'COMMA',
         'do': 'DO',
         'to': 'TO',
         'with': 'WITH',
@@ -26,13 +21,14 @@ class Lexer(object):
         'delegate': 'RIGHT',
         'date': 'DATE',
         'password': "PASSWORD",
-        'all' : "ALL",
+        'all': "ALL",
     }
 
     # List of token names.   This is always required
     tokens = [
                  'ID',
                  'NUMBER',
+                 'COMMA',
                  'LPAREN',
                  'RPAREN',
                  'STRING',
@@ -41,7 +37,11 @@ class Lexer(object):
                  'SQUBRACKETS',
                  'ID_GROUP',
                  'PROG',
-                 'NEWLINE'
+                 'NEWLINE',
+                 'EQUAL',
+                 'ARROW',
+                 'LCURLYPAREN',
+                 'RCURLYPAREN',
              ] + list(reserved.values())
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
@@ -50,7 +50,7 @@ class Lexer(object):
     t_SQUBRACKETS = r'\[\]'
     t_EQUAL = r'='
     t_COMMA = r','
-    t_DO = r'\ {1,}do\ {1,}'
+    t_DO = r'\ {1,}do'
     t_WITH = r'\ {1,}with\ {1,}'
     t_IN = r'\ {1,}in\ {1,}'
     t_PASSWORD = r'\ {1,}password\ {1,}'
@@ -143,7 +143,7 @@ class Lexer(object):
 
     def next(self):
         next = self.gen.next()
-        print next # DEBUG
+        print next  # DEBUG
         return next
 
     def __init__(self, data="", **kwargs):
