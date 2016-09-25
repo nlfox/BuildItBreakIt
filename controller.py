@@ -154,7 +154,13 @@ class Controller:
             )
 
     def default_delegator(self, user):
-        pass
+        self.apply_permissions(
+            self.principal == "admin",
+
+            self.store.user_exists(user),
+
+            lambda self: self.store.set_default(user)
+            )
 
     # Used to make sure identifiers are fields and not attributes
     def _is_field(self, field):

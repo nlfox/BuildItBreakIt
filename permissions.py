@@ -7,6 +7,8 @@ class SecurityState:
 
     def add_user(self, user):
         self.delegations[user] = []
+        for p in self.permissions:
+            self.set_delegation("all", self.default, p, user)
 
     def own(self, user, field):
         if field not in self.identifiers:
@@ -14,6 +16,9 @@ class SecurityState:
             
         for p in self.permissions:
             self.set_delegation(field, "admin", p, user)
+
+    def set_default(self, user):
+        self.default = user
 
     def set_delegation(self, field, authority, permission, user):
         if field == "all":

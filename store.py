@@ -144,4 +144,5 @@ class Store:
     def delete_delegation(self, field, authority, permission, user):
         self.S.delete_delegation(field, authority, permission, user)
 
-    
+    def set_default(self, user):
+        self.S.set_default(user)
