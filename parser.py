@@ -64,7 +64,7 @@ class Lexer(object):
     # This position has the highest priority
     # TODO: add more command
     def t_COMMAND(self, t):
-        r'(create\ +principal|change\ +password|append\ +to|set|set\ +delegation|delete\ +delegation|default\ +delegator|local|return|exit|foreach)\ {1,}'
+        r'(create\ +principal|change\ +password|append\ +to|set\ +delegation|set|delete\ +delegation|default\ +delegator|local|return|exit|foreach)\ {1,}'
         t.value = " ".join(t.value.split())
         return t
 
