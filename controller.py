@@ -24,8 +24,8 @@ class Controller:
             self._error("FAILED")
 
     def begin_transaction(self, principal, password):
-        self._assert_access(self.store.user_exists(principal))
-        self._assert_success(self.store.check_password(principal, password))
+        self._assert_success(self.store.user_exists(principal))
+        self._assert_access(self.store.check_password(principal, password))
         self.principal = principal
         self.store.begin_transaction(principal)
 
@@ -138,7 +138,9 @@ class Controller:
         elif type(expression) == dict:
             resolved_dict = {}
             for key in expression.keys():
-                resolved_dict[key] = self._parse_value(expression[key])
+                value = self._parse_value(expression[key])
+                self._assert_success(type(value) == str)
+                resolved_dict[key] = value
             return resolved_dict
         else:
             self._error("FAILED")

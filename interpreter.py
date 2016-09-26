@@ -48,7 +48,9 @@ class Interpreter(object):
         return self.result
 
     def _parse_expr(self, parser):
-        token = parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN")
+        token = parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS")
+        if token.type == "SQUBRACKETS":
+            return []
         if token.type == "LCURLYPAREN":
             return self._parse_dict(parser)
         return token
@@ -96,7 +98,7 @@ class Interpreter(object):
         val = parser.expect("ID").value
         parser.expect("WITH")
         expr = self._parse_expr(parser)
-        self.operation_queue.append(lambda: self.controller.append(val, expr))
+        self.operation_queue.append(lambda: self.controller.append_to(val, expr))
         self.result += _status_json("APPEND")
 
     def _local(self, parser):

@@ -8,25 +8,21 @@ from parser import Lexer
 requests = ['''
 
 as principal admin password "admin" do
-create principal alice "password"
-set x = "test"
-set y = "test2"
-set delegation x admin read -> alice
-set delegation y admin write -> alice
-return x
+   create principal bob "B0BPWxxd"
+   set x = []
+   append to x with "test"
+   append to x with "test1"
+   append to x with "test2"
+   append to x with { a = "x", b = "y", c = x }
+   append to x with x
+   set delegation x admin read -> bob
+   return x
 ***
 
 '''.strip(), '''
 
-as principal alice password "password" do
-set y = "testerino"
+as principal bob password "B0BPWxxd" do
 return x
-***
-
-'''.strip(), '''
-
-as principal admin password "admin" do
-return y
 ***
 
 '''.strip()]
