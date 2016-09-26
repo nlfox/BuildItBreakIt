@@ -73,6 +73,10 @@ class Lexer(object):
         t.value = " ".join(t.value.split())
         return t
 
+    def t_COMMENT(self, t):
+        r'//[A-Za-z0-9_\ ,;\.?!-]*'
+        return None
+
     def t_ID_GROUP(self, t):
         r'[a-zA-Z0-9]+\.[a-zA-Z0-9]+'
         return t
