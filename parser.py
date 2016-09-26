@@ -143,7 +143,7 @@ class Lexer(object):
 
     def next(self):
         next = self.gen.next()
-        print next  # DEBUG
+        print next
         return next
 
     def __init__(self, data="", **kwargs):

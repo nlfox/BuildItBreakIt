@@ -37,10 +37,11 @@ class Interpreter(object):
             while self.flag:
                 parser.expect("NEWLINE")
                 token = parser.expect("COMMAND")  # Checking for terminator not needed since return or exit is needed first
-                try:
-                    getattr(self, "_" + "_".join(token.value.split(" ")))(parser)
-                except AttributeError:
-                    raise NotImplementedError("Unknown command: " + token.value)
+                #try:
+                getattr(self, "_" + "_".join(token.value.split(" ")))(parser)
+                #except AttributeError:
+                 #   print "_" + "_".join(token.value.split(" "))
+                  #  raise NotImplementedError("Unknown command: " + token.value)
 
         except RuntimeError as err:
             return _status_json(err.args[0])
@@ -115,7 +116,7 @@ class Interpreter(object):
         self.result += _status_json("FOREACH")
 
     def _set_delegation(self, parser):
-        tgt = parser.expect("ID", "ALL")
+        tgt = parser.expect("ID", "ALL").value
         q = parser.expect("ID").value
         right = parser.expect("RIGHT").value
         parser.expect("ARROW")
