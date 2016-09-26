@@ -89,7 +89,7 @@ class Lexer(object):
 
     # Define a rule so we can track line numbers
     def t_NEWLINE(self, t):
-        r'\r\n|\n'
+        r'\n{1,}|\r\n'
         t.lexer.lineno += len(t.value)
         return t
 
