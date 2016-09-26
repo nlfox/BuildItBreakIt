@@ -115,7 +115,7 @@ class Interpreter(object):
         self.result += _status_json("FOREACH")
 
     def _set_delegation(self, parser):
-        tgt = parser.expect("ID", "ALL")
+        tgt = parser.expect("ID", "ALL").value
         q = parser.expect("ID").value
         right = parser.expect("RIGHT").value
         parser.expect("ARROW")
