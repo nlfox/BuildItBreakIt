@@ -143,7 +143,7 @@ class Interpreter(object):
         parser.expect("NEWLINE")
         parser.expect("TERMINATOR")
         self._execute_operations()
-        result = self.result + _status_json("EXITING")
+        self.result += _status_json("EXITING")
         self.controller.end_transaction_exit()
         self.flag = False
 

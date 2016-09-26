@@ -5,29 +5,36 @@ from controller import Controller
 from interpreter import Interpreter
 from parser import Lexer
 
-request = '''
+requests = ['''
 
 as principal admin password "admin" do
 create principal alice "password"
 set x = "test"
+set y = "test2"
 set delegation x admin read -> alice
+set delegation y admin write -> alice
 return x
 ***
 
-'''.strip()
-
-request2 = '''
+'''.strip(), '''
 
 as principal alice password "password" do
+set y = "testerino"
 return x
 ***
 
-'''.strip()
+'''.strip(), '''
+
+as principal admin password "admin" do
+return y
+***
+
+'''.strip()]
 
 if __name__ == '__main__':
     store = Store("admin")
     controller = Controller(store, None)
     interpreter = Interpreter(controller)
-    print interpreter.accept(Lexer(request))
-    print interpreter.accept(Lexer(request2))
+    for request in requests:
+        print interpreter.accept(Lexer(request))
 
