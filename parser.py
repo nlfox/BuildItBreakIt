@@ -156,10 +156,3 @@ class Lexer(object):
         self.lexer = lex.lex(module=self, errorlog=lex.NullLogger(), **kwargs)
         self.gen = self._initGen()
         pass
-
-
-data = """
-as prinipal admin   "asasasa" do sasasa//aaa
-set
-"""
-print [[i.value, i.type] for i in Lexer(data).gen]
