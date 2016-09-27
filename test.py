@@ -28,5 +28,5 @@ if __name__ == '__main__':
     controller = Controller(store, None)
     interpreter = Interpreter(controller)
     for request in requests:
-        print interpreter.accept(Lexer(request))
+        print interpreter.accept(request)
 

@@ -42,7 +42,7 @@ class Lexer(object):
                  'ARROW',
                  'LCURLYPAREN',
                  'RCURLYPAREN',
-        'COMMENT'
+                 'COMMENT'
              ] + list(reserved.values())
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
@@ -148,11 +148,13 @@ class Lexer(object):
 
     def next(self):
         next = self.gen.next()
-        print next
         return next
 
     def __init__(self, data="", **kwargs):
         self.data = data
         self.lexer = lex.lex(module=self, errorlog=lex.NullLogger(), **kwargs)
         self.gen = self._initGen()
-        pass
+
+    def setNewData(self, data):
+        self.data = data
+        self.gen = self._initGen()
