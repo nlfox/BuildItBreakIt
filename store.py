@@ -69,24 +69,32 @@ class Store:
     def get_field(self, label):
         if not self.field_exists(label):
             return ""
-        
+
+        val = None
+
         labellist = label.split('.')
         if len(labellist) == 1:
             if labellist[0] in self.local.keys():
                 val = self.local[labellist[0]]
-                return val
             elif labellist[0] in self.fieldsPatch.keys():
-                return self.fieldsPatch[labellist[0]]
+                val = self.fieldsPatch[labellist[0]]
             else:
-                return self.fields[labellist[0]]
+                val = self.fields[labellist[0]]
             
         elif len(labellist) == 2:
             if labellist[0] in self.local.keys():
-                return self.local[labellist[0]][labellist[1]]
+                val = self.local[labellist[0]][labellist[1]]
             elif labellist[0] in self.fieldsPatch.keys():
-                return self.fieldsPatch[labellist[0]][labellist[1]]
+                val = self.fieldsPatch[labellist[0]][labellist[1]]
             else:
-                return self.fields[labellist[0]][labellist[1]]
+                val = self.fields[labellist[0]][labellist[1]]
+
+        if type(val) == dict:
+            return dict(val)
+        elif type(val) == list:
+            return list(val)
+        else:
+            return val
 
     def user_exists(self, username):
         if username in self.usersPatch:
