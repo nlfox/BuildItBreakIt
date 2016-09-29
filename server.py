@@ -21,6 +21,6 @@ class Server(object):
                     result = result + data
                     if "***" in data:
                         break
-                self.connection.sendall(interpreter.accept(Lexer(result)))
+                self.connection.sendall(interpreter.accept(result))
             finally:
                 self.connection.close()
