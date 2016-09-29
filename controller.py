@@ -24,8 +24,8 @@ class Controller:
             self._error("FAILED")
 
     def begin_transaction(self, principal, password):
-        self._assert_access(self.store.user_exists(principal))
-        self._assert_success(self.store.check_password(principal, password))
+        self._assert_success(self.store.user_exists(principal))
+        self._assert_access(self.store.check_password(principal, password))
         self.principal = principal
         self.store.begin_transaction(principal)
 
