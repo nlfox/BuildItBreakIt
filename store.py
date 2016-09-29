@@ -4,7 +4,7 @@ from permissions import SecurityState
 class Store:
     def __init__(self, admin_password):
         self.fields = {}
-        self.users = {"admin": admin_password}
+        self.users = {"admin": admin_password, "anyone": None}
 
         self.fieldsPatch = {}
         self.usersPatch = {}
