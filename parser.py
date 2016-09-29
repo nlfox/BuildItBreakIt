@@ -42,6 +42,7 @@ class Lexer(object):
                  'ARROW',
                  'LCURLYPAREN',
                  'RCURLYPAREN',
+                 'COMMENT'
              ] + list(reserved.values())
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
@@ -73,6 +74,10 @@ class Lexer(object):
         t.value = " ".join(t.value.split())
         return t
 
+    def t_COMMENT(self, t):
+        r'\n?\/\/[A-Za-z0-9_\ ,;\.?!-]*'
+        pass
+
     def t_ID_GROUP(self, t):
         r'[a-zA-Z0-9]+\.[a-zA-Z0-9]+'
         return t
@@ -85,7 +90,7 @@ class Lexer(object):
 
     # Define a rule so we can track line numbers
     def t_NEWLINE(self, t):
-        r'\r\n|\n'
+        r'\n|\r\n'
         t.lexer.lineno += len(t.value)
         return t
 
@@ -143,11 +148,13 @@ class Lexer(object):
 
     def next(self):
         next = self.gen.next()
-        print next  # DEBUG
         return next
 
     def __init__(self, data="", **kwargs):
         self.data = data
         self.lexer = lex.lex(module=self, errorlog=lex.NullLogger(), **kwargs)
         self.gen = self._initGen()
-        pass
+
+    def setNewData(self, data):
+        self.data = data
+        self.gen = self._initGen()

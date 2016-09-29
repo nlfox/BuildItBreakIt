@@ -138,7 +138,9 @@ class Controller:
         elif type(expression) == dict:
             resolved_dict = {}
             for key in expression.keys():
-                resolved_dict[key] = self._parse_value(expression[key])
+                value = self._parse_value(expression[key])
+                self._assert_success(type(value) == str)
+                resolved_dict[key] = value
             return resolved_dict
         else:
             self._error("FAILED")

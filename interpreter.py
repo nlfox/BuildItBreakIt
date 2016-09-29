@@ -13,6 +13,7 @@
 # --------------------------------------#
 
 import json
+from parser import Lexer
 
 
 class Interpreter(object):
@@ -21,135 +22,140 @@ class Interpreter(object):
         self.operation_queue = []
         self.result = ""
         self.flag = False
+        self.parser = Lexer()
 
     def _execute_operations(self):
         for operation in self.operation_queue:
             operation()
         self.operation_queue = []
 
-    def accept(self, parser):
+    def accept(self, data):
         """Accepts the parser and interprets provided tokens to perform actions on the store and server"""
 
         self.result = ""
         self.flag = True
+        parser = self.parser.setNewData(data)
         try:
-            self._auth(parser)
+            self._auth()
             while self.flag:
-                parser.expect("NEWLINE")
-                token = parser.expect("COMMAND")  # Checking for terminator not needed since return or exit is needed first
-                try:
-                    getattr(self, "_" + "_".join(token.value.split(" ")))(parser)
-                except AttributeError:
-                    raise NotImplementedError("Unknown command: " + token.value)
+                self.parser.expect("NEWLINE")
+                token = self.parser.expect("COMMAND")  # Checking for terminator not needed since return or exit is needed first
+                #try:
+                getattr(self, "_" + "_".join(token.value.split(" ")))()
+                #except AttributeError:
+                 #   print "_" + "_".join(token.value.split(" "))
+                  #  raise NotImplementedError("Unknown command: " + token.value)
 
         except RuntimeError as err:
             return _status_json(err.args[0])
         return self.result
 
-    def _parse_expr(self, parser):
-        token = parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN")
+    def _parse_expr(self):
+        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS")
+        if token.type == "SQUBRACKETS":
+            return []
         if token.type == "LCURLYPAREN":
-            return self._parse_dict(parser)
+            return self._parse_dict()
         return token
 
-    def _parse_dict(self, parser):
+    def _parse_dict(self):
         dictionary = {}
         while True:
-            key = parser.expect("ID").value
-            parser.expect("EQUAL")
-            value = parser.expect("ID", "ID_GROUP", "STRING")
+            key = self.parser.expect("ID").value
+            self.parser.expect("EQUAL")
+            value = self.parser.expect("ID", "ID_GROUP", "STRING")
             dictionary[key] = value
-            next_token = parser.expect("COMMA", "RCURLYPAREN")
+            next_token = self.parser.expect("COMMA", "RCURLYPAREN")
             if next_token.type == "RCURLYPAREN":
                 break
         return dictionary
 
-    def _auth(self, parser):
-        parser.expect("PROG")
-        username = parser.expect("ID").value
-        parser.expect("PASSWORD")
-        password = parser.expect("STRING").value
-        parser.expect("DO")
+    def _auth(self):
+        self.parser.expect("PROG")
+        username = self.parser.expect("ID").value
+        self.parser.expect("PASSWORD")
+        password = self.parser.expect("STRING").value
+        self.parser.expect("DO")
         self.controller.begin_transaction(username, password)
 
-    def _set(self, parser):
-        variable = parser.expect("ID").value
-        parser.expect("EQUAL")
-        expr = self._parse_expr(parser)
+    def _set(self):
+        variable = self.parser.expect("ID").value
+        self.parser.expect("EQUAL")
+        expr = self._parse_expr()
         self.operation_queue.append(lambda: self.controller.set(variable, expr))
         self.result += _status_json("SET")
 
-    def _change_password(self, parser):
-        name = parser.expect("ID").value
-        new_pass = parser.expect("STRING").value
+    def _change_password(self):
+        name = self.parser.expect("ID").value
+        new_pass = self.parser.expect("STRING").value
         self.operation_queue.append(lambda: self.controller.change_password(name, new_pass))
         self.result += _status_json("CHANGE_PASSWORD")
 
-    def _create_principal(self, parser):
-        name = parser.expect("ID").value
-        new_pass = parser.expect("STRING").value
+    def _create_principal(self):
+        name = self.parser.expect("ID").value
+        new_pass = self.parser.expect("STRING").value
         self.operation_queue.append(lambda: self.controller.create_principal(name, new_pass))
         self.result += _status_json("CREATE_PRINCIPAL")
 
-    def _append_to(self, parser):
-        val = parser.expect("ID").value
-        parser.expect("WITH")
-        expr = self._parse_expr(parser)
-        self.operation_queue.append(lambda: self.controller.append(val, expr))
+    def _append_to(self):
+        val = self.parser.expect("ID").value
+        self.parser.expect("WITH")
+        expr = self._parse_expr()
+        self.operation_queue.append(lambda: self.controller.append_to(val, expr))
         self.result += _status_json("APPEND")
 
-    def _local(self, parser):
-        variable = parser.expect("ID").value
-        parser.expect("EQUAL")
-        expr = self._parse_expr(parser)
+    def _local(self):
+        variable = self.parser.expect("ID").value
+        self.parser.expect("EQUAL")
+        expr = self._parse_expr()
         self.operation_queue.append(lambda: self.controller.local(variable, expr))
         self.result += _status_json("LOCAL")
 
-    def _foreach(self, parser):
-        y = parser.expect("ID").value
-        parser.expect("IN")
-        x = parser.expect("ID").value
-        parser.expect("REPLACEWITH")
-        expr = self._parse_expr(parser)
+    def _foreach(self):
+        y = self.parser.expect("ID").value
+        self.parser.expect("IN")
+        x = self.parser.expect("ID").value
+        self.parser.expect("REPLACEWITH")
+        expr = self._parse_expr()
         self.operation_queue.append(lambda: self.controller.foreach(y, x, expr))
         self.result += _status_json("FOREACH")
 
-    def _set_delegation(self, parser):
-        tgt = parser.expect("ID", "ALL")
-        q = parser.expect("ID").value
-        right = parser.expect("RIGHT").value
-        parser.expect("ARROW")
-        p = parser.expect("ID").value
+    def _set_delegation(self):
+        tgt = self.parser.expect("ID", "ALL").value
+        q = self.parser.expect("ID").value
+        right = self.parser.expect("RIGHT").value
+        self.parser.expect("ARROW")
+        p = self.parser.expect("ID").value
         self.operation_queue.append(lambda: self.controller.set_delegation(tgt, q, right, p))
         self.result += _status_json("SET_DELEGATION")
 
-    def _delete_delegation(self, parser):
-        tgt = parser.expect("ID", "ALL")
-        q = parser.expect("ID").value
-        right = parser.expect("RIGHT").value
-        parser.expect("ARROW")
-        p = parser.expect("ID").value
+    def _delete_delegation(self):
+        tgt = self.parser.expect("ID", "ALL").value
+        q = self.parser.expect("ID").value
+        right = self.parser.expect("RIGHT").value
+        self.parser.expect("ARROW")
+        p = self.parser.expect("ID").value
         self.operation_queue.append(lambda: self.controller.delete_delegation(tgt, q, right, p))
         self.result += _status_json("DELETE_DELEGATION")
 
-    def _default_delegator(self, parser):
-        parser.expect("EQUAL")
-        user = parser.expect("ID").value
+    def _default_delegator(self):
+        self.parser.expect("EQUAL")
+        user = self.parser.expect("ID").value
         self.operation_queue.append(lambda: self.controller.default_delegator(user))
         self.result += _status_json("DEFAULT_DELEGATOR")
 
-    def _exit(self, parser):
-        parser.expect("NEWLINE")
-        parser.expect("TERMINATOR")
+    def _exit(self):
+        self.parser.expect("NEWLINE")
+        self.parser.expect("TERMINATOR")
         self._execute_operations()
-        result = self.result + _status_json("EXITING")
+        self.result += _status_json("EXITING")
         self.controller.end_transaction_exit()
         self.flag = False
 
-    def _return(self, parser):
-        return_value = self._parse_expr(parser)
-        parser.expect("NEWLINE")
-        parser.expect("TERMINATOR")
+    def _return(self):
+        return_value = self._parse_expr()
+        self.parser.expect("NEWLINE")
+        self.parser.expect("TERMINATOR")
         self._execute_operations()
         value = self.controller.get_value(return_value)
         self.result += '{"status":"RETURNING", "output":' + json.dumps(value) + '}'

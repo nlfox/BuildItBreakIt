@@ -157,3 +157,15 @@ class Store:
 
     def set_default(self, user):
         self.S.set_default(user)
+
+    def append_to(self, field, expr):
+        l = []
+        if field in self.fieldsPatch.keys():
+            l = self.fieldsPatch[field]
+        elif field in self.fields.keys():
+            self.fieldsPatch[field] = l
+            l.extend(self.fields[field])
+        if type(expr) == list:
+            l.extend(expr)
+        else:
+            l.append(expr)

@@ -2,14 +2,17 @@ from unittest import TestCase
 from parser import Lexer
 
 
-data = '''inin        all
-    as principaladmin password "admin" do
-    setrecords=[]localx
-    append to records with { name = "mike", date = "1-1-90" }
-    filtereach rec in records with equal(rec.date, "1-1-90")
-    return records
-    ***
-    '''
+data = '''
+
+inin        all
+as principaladmin password "admin" do
+setrecords=[]localx
+append to records with { name = "mike", date = "1-1-90" }
+filtereach rec in records with equal(rec.date, "1-1-90")
+return records
+***
+
+'''.strip()
 
 
 class TestLexer(TestCase):
