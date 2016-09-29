@@ -19,7 +19,6 @@ class Lexer(object):
         'write': 'RIGHT',
         'append': 'RIGHT',
         'delegate': 'RIGHT',
-        'date': 'DATE',
         'password': "PASSWORD",
         'all': "ALL",
     }
@@ -58,7 +57,6 @@ class Lexer(object):
     t_REPLACEWITH = r'\ {1,}replacewith\ {1,}'
     t_ARROW = r'->'
     t_TERMINATOR = r'\*\*\*'
-    t_DATE = r'date'
     t_RIGHT = r'\ {1,}(read|write|append|delegate)'
     t_ALL = r'\ {1,}all\ {1,}'
 
