@@ -9,16 +9,12 @@ requests = ['''
 
 as principal admin password "admin" do
    create principal bob "B0BPWxxd"
-   set x = "my string" //test comment
-   set y = {f1 = x, f2 = "field2" }
+   set x = [] //test comment
+   append to x with "Hello "
+   set y = x
+   append to y with "World!"
    set delegation x admin read -> bob
-return y.f2
-***
-
-'''.strip(), '''
-
-as principal bob password "B0BPWxxd" do
-    return x
+return x
 ***
 
 '''.strip()]
