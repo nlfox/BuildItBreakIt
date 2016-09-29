@@ -18,9 +18,9 @@ return records
 class TestLexer(TestCase):
     def test_space(self):
         data = """
-            as prinipal admin     "asasasa" do sasasa
+            as principal   admin     "asasasa" do sasasa
         """
         print [[i.value, i.type] for i in Lexer(data).gen]
         self.assertListEqual([[i.value, i.type] for i in Lexer(data).gen],
-                             [['\n', 'NEWLINE'], ['as', 'ID'], ['prinipal', 'ID'], ['admin', 'ID'],
+                             [['\n', 'NEWLINE'], ['as principal', 'PROG'], ['admin', 'ID'],
                               ['asasasa', 'STRING'], ['do', 'DO'], ['sasasa', 'ID'], ['\n', 'NEWLINE']])
