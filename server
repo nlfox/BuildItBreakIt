@@ -1,0 +1,4 @@
+#!/usr/bin/sh
+echo "hello"
+echo "hello" > tmp.txt
+python2 main.py $1
