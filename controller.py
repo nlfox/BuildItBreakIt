@@ -77,7 +77,7 @@ class Controller:
             is_field(field))
         self.store.set_local(field, value)
 
-    def for_each(self, iterator, field, expression):
+    def foreach(self, iterator, field, expression):
         self._assert_access(
             self.store.has_permission(self.principal, field, "read") and
             self.store.has_permission(self.principal, field, "write"))
