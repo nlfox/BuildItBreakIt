@@ -1,3 +1,4 @@
+------------------
 #Failing to create principal alice in second request
 requests = ['''
 
@@ -12,7 +13,7 @@ return x
 
 as principal admin password "admin" do
     create principal alice "alicespassword"
-    return "Success"
+return "Success"
 ***
 
 '''.strip()]
