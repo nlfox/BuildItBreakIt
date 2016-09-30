@@ -1,8 +1,7 @@
 #!/usr/bin/python2
 
 from store import Store
-import ply.lex as lex
-from ply.lex import LexToken
+from lex import LexToken
 
 
 class Controller:
@@ -21,6 +20,7 @@ class Controller:
 
     def _assert_success(self, condition):
         if not condition:
+            print "controller"
             self._error("FAILED")
 
     def begin_transaction(self, principal, password):
@@ -131,11 +131,11 @@ class Controller:
         self.store.set_default(user)
 
     def _parse_expression(self, expression):
-        if type(expression) == LexToken:
+        if type(expression) is LexToken:
             return self._parse_value(expression)
-        elif type(expression) == list and len(expression) == 0:
+        elif type(expression) is list and len(expression) == 0:
             return []
-        elif type(expression) == dict:
+        elif type(expression) is dict:
             resolved_dict = {}
             for key in expression.keys():
                 value = self._parse_value(expression[key])
