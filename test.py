@@ -8,13 +8,12 @@ from parser import Lexer
 requests = ['''
 
 as principal admin password "admin" do
-   create principal bob "B0BPWxxd"
-   set x = [] //test comment
-   append to x with "Hello "
-   set y = x
-   append to y with "World!"
-   set delegation x admin read -> bob
-return x
+    set records = []
+    append to records with { name = "mike", date = "1-1-90" }
+    append to records with { name = "dave", date = "1-1-85" }
+    local names = records
+    foreach rec in names replacewith rec.name
+return names
 ***
 
 '''.strip()]

@@ -31,13 +31,11 @@ class SecurityState:
     def complete_transaction(self):
         self.delegations = deepcopy(self.delegationsPatch)
         self.default = self.defaultPatch
-        self.default = ""
         self.identifiers = list(set().union(self.identifiers, self.identifiersPatch))
         self.identifiersPatch = []
 
     def discard_transaction(self):
         self.delegationsPatch = deepcopy(self.delegations)
-        self.default = ""
         self.identifiersPatch = []
 
     def add_user(self, user):
