@@ -42,7 +42,7 @@ class SecurityState:
         if user not in self.delegations and user not in self.delegationsPatch:
             self.delegationsPatch[user] = []
             for p in self.permissions:
-                self.set_delegation("all", self.default, p, user)
+                self.set_delegation("all", self.defaultPatch, p, user)
 
     def own(self, user, field):
         if field not in self.identifiers and field not in self.identifiersPatch:
