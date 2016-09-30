@@ -20,7 +20,6 @@ class Controller:
 
     def _assert_success(self, condition):
         if not condition:
-            print "controller"
             self._error("FAILED")
 
     def begin_transaction(self, principal, password):
