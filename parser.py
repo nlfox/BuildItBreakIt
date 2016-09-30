@@ -77,7 +77,7 @@ class Lexer(object):
         pass
 
     def t_ID_GROUP(self, t):
-        r'[a-zA-Z0-9]+\.[a-zA-Z0-9]+'
+        r'[a-zA-Z][a-zA-Z0-9_]*\.[a-zA-Z][a-zA-Z0-9_]*'
         return t
 
     # A regular expression rule with some action code
@@ -99,7 +99,7 @@ class Lexer(object):
         return t
 
     def t_ID(self, t):
-        r'[a-zA-Z_][a-zA-Z0-9]*(?!\")'
+        r'[a-zA-Z][a-zA-Z0-9_]*(?!\")'
         t.type = self.reserved.get(t.value, 'ID')  # Check for reserved words
         return t
 
