@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 def main():
 
     args = sys.argv
-    print args
+#    print args
     if len(args) < 2 or len(args) > 3:
         sys.exit(1)
 

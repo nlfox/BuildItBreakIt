@@ -2,4 +2,13 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
-python2 ../main.py "$1" "$2"
+
+if [ $# -eq 2 ]
+then
+    python2 ../main.py "$1" "$2"
+elif [ $# -eq 1 ]
+then
+    python2 ../main.py "$1"
+else
+    exit 255
+fi

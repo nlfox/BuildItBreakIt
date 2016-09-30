@@ -48,7 +48,7 @@ class Interpreter(object):
                   #  raise NotImplementedError("Unknown command: " + token.value)
 
         except RuntimeError as err:
-            #traceback.print_exc()
+#            traceback.print_exc()
             self.operation_queue = []
             return _status_json(err.args[0])
         return self.result
