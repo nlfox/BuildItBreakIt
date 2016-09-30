@@ -24,6 +24,7 @@ if __name__ == '__main__':
     interpreter = Interpreter(controller)
 
     for program in test["programs"]:
+        print program["program"].decode("string-escape")
         print "Expected:"
         for line in program["output"]:
             print json.dumps(line).replace(": ", ":")
