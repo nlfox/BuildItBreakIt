@@ -96,7 +96,7 @@ class Controller:
     def set_delegation(self, field, authority, permission, user):
         self._assert_access(
             (self.principal == "admin" or self.principal == authority) and
-            (self.store.has_permission(authority, field, "delegate") or
+            (self.store.has_permission(self.principal, field, "delegate") or
              field == "all"))
         self._assert_success(
             (self.store.global_field_exists(field) or field == "all") and
