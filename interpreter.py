@@ -32,7 +32,9 @@ class Interpreter(object):
 
     def accept(self, data):
         """Accepts the parser and interprets provided tokens to perform actions on the store and server"""
-
+        if len(data) > 1000000:
+            return _status_json("FAILED")
+        
         self.result = ""
         self.flag = True
         parser = self.parser.setNewData(data)
