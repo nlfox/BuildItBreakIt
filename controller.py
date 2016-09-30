@@ -71,9 +71,7 @@ class Controller:
 
     def local(self, field, expression):
         value = self._parse_expression(expression)
-        self._assert_access(
-            not self.store.field_exists(field) and
-            is_field(field))
+        self._assert_success(is_field(field) and not self.store.field_exists(field))
         self.store.set_local(field, value)
 
     def foreach(self, iterator, field, expression):
