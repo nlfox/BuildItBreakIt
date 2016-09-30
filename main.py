@@ -10,28 +10,34 @@ from argparse import ArgumentParser
 
 
 def main():
-    argparser = ArgumentParser()
-    argparser.add_argument("port", help="Port number to be used by the server", type=str)
-    argparser.add_argument("password", help="Password to be used for the admin account", nargs="?", default="admin",
-                           type=str)
-    args = argparser.parse_args()
 
-    if len(args.password) > 4096 or len(args.port) > 4096:
+    args = sys.argv
+    print args
+    if len(args) < 2 or len(args) > 3:
+        sys.exit(1)
+
+    arg_port = sys.argv[1]
+    if len(arg_port) > 4096:
         sys.exit(255)
-    if not args.port.isdigit() or args.port[0] == "0":
+    if not arg_port.isdigit() or arg_port[0] == "0":
         sys.exit(255)
 
-    pattern = re.compile("^[A-Za-z0-9_ ,;.?!-]*$")
-    if not pattern.match(args.password):
-        sys.exit(255)
+    password = "admin"
+    if len(args) == 3:
+        password = sys.argv[2]
+        if len(password) > 4096:
+            sys.exit(255)
+        pattern = re.compile("^[A-Za-z0-9_ ,;.?!-]*$")
+        if not pattern.match(password):
+            sys.exit(255)
 
     hostname = "localhost"
-    port = int(args.port)
+    port = int(arg_port)
 
     if port < 1024 or port > 65535:
-        sys.exit(0)
+        sys.exit(255)
 
-    store = Store(args.password)
+    store = Store(password)
 
     server = Server(hostname, port)
     controller = Controller(store, server)
