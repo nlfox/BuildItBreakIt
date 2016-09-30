@@ -49,7 +49,7 @@ class Controller:
 
     def get_value(self, token):
         # evaluate token value and return that
-        if type(token) is dict:
+        if type(token) is dict or type(token) is list:
             return token
         else:
             return self._parse_value(token)
