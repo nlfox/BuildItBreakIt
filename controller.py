@@ -132,8 +132,8 @@ class Controller:
     def _parse_expression(self, expression):
         if type(expression) is LexToken:
             return self._parse_value(expression)
-        elif type(expression) is list and len(expression) == 0:
-            return []
+        elif type(expression) is list:
+            return expression
         elif type(expression) is dict:
             resolved_dict = {}
             for key in expression.keys():
