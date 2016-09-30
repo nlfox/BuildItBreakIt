@@ -21,6 +21,6 @@ class Server(object):
                     result = result + data
                     if "***" in data:
                         break
-                self.connection.sendall(interpreter.accept(result))
+                self.connection.sendall(interpreter.accept(result.decode('string-escape')))
             finally:
                 self.connection.close()
