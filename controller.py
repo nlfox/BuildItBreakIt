@@ -150,7 +150,7 @@ class Controller:
             self._assert_success(self.store.field_exists(value.value))
             return self.store.get_field(value.value)
         elif value.type == "STRING":
-            return value.value
+            return str(value.value)
         else:
             raise NotImplementedError("Unknown token type: " + value.type)
 
