@@ -20,6 +20,8 @@ def main():
         sys.exit(255)
     if not args.port.isdigit() or args.port[0] == "0":
         sys.exit(255)
+    if int(args.port) < 1024 or int(args.port) > 65535:
+        sys.exit(255)
 
     pattern = re.compile("^[A-Za-z0-9_ ,;.?!-]*$")
     if not pattern.match(args.password):
