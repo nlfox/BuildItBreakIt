@@ -65,6 +65,9 @@ class Interpreter(object):
         dictionary = {}
         while True:
             key = self.parser.expect("ID").value
+            if key in dictionary:
+                raise RuntimeError("FAILED")
+
             self.parser.expect("EQUAL")
             value = self.parser.expect("ID", "ID_GROUP", "STRING")
             dictionary[key] = value
