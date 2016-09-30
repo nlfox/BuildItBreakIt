@@ -93,7 +93,7 @@ class Lexer(object):
         return t
 
     def t_STRING(self, t):
-        r'"[A-Za-z0-9_ ,;\.?!-]*"'
+        r'"[A-Za-z0-9_ ,;\.?!-]{,65535}"'
         t.type = "STRING"
         t.value = t.value[1:-1]
         return t
