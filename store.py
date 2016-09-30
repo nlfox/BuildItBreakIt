@@ -109,7 +109,7 @@ class Store:
         tags = label.split('.')
 
         if len(tags) == 1:
-            return tags[0] in self.local.keys() or tags[0] in self.fields.keys() or tags[0] in self.fieldsPatch.keys()
+            return (local and tags[0] in self.local.keys()) or tags[0] in self.fields.keys() or tags[0] in self.fieldsPatch.keys()
         else:
             if local and tags[0] in self.local.keys():
                 return type(self.local[tags[0]]) == dict and tags[1] in self.local[tags[0]]
@@ -144,8 +144,12 @@ class Store:
     def set_field(self, field, value):
         if not self.field_exists(field):
             self.S.own(self.principal, field)
+            self.fieldsPatch[field] = value
+        elif not self.field_exists(field, local=False):
+            self.set_local(field, value)
+        else:
+            self.fieldsPatch[field] = value
             
-        self.fieldsPatch[field] = value
 
     def set_local(self, field, value):
         self.local[field] = value
