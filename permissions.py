@@ -1,15 +1,16 @@
 from copy import deepcopy
+from sets import Set
 
 class SecurityState:
     def __init__(self):
         self.permissions = ["delegate", "read", "write", "append"]
         self.delegations = {"anyone": [], "admin": []}
         self.default = "anyone"
-        self.identifiers = []
+        self.identifiers = Set([])
 
-        self.delegationsPatch = {}
+        self.delegationsPatch = {"anyone": [], "admin": []}
         self.defaultPatch = ""
-        self.identifiersPatch = []
+        self.identifiersPatch = Set([])
 
     def __str__(self):
         s = ""
@@ -24,19 +25,22 @@ class SecurityState:
         return s
 
     def begin_transaction(self):
-        self.delegationsPatch = deepcopy(self.delegations)
         self.defaultPatch = self.default
-        self.identifiersPatch = []
+        self.identifiersPatch = Set([])
 
     def complete_transaction(self):
-        self.delegations = deepcopy(self.delegationsPatch)
+        self.delegations = {}
+        for key in self.delegationsPatch:
+            self.delegations[key] = list(self.delegationsPatch[key])
         self.default = self.defaultPatch
-        self.identifiers = list(set().union(self.identifiers, self.identifiersPatch))
-        self.identifiersPatch = []
+        self.identifiers.update(self.identifiersPatch)
+        self.identifiersPatch = Set([])
 
     def discard_transaction(self):
-        self.delegationsPatch = deepcopy(self.delegations)
-        self.identifiersPatch = []
+        self.delegationsPatch = {}
+        for key in self.delegations:
+            self.delegationsPatch[key] = list(self.delegations[key])
+        self.identifiersPatch = Set([])
 
     def add_user(self, user):
         if user not in self.delegations and user not in self.delegationsPatch:
@@ -46,7 +50,7 @@ class SecurityState:
 
     def own(self, user, field):
         if field not in self.identifiers and field not in self.identifiersPatch:
-            self.identifiersPatch.append(field)
+            self.identifiersPatch.add(field)
             
         for p in self.permissions:
             self.set_delegation(field, "admin", p, user)
