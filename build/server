@@ -1,5 +1,8 @@
-#!/bin/bash
+#!/bin/python2
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd $DIR
-python2 ../main.py $1 $2
+from subprocess import call
+from sys import argv, exit
+import os
+
+dir = os.path.dirname(os.path.realpath(__file__))
+exit(call([dir + "/../main.py"] + argv[1:]))

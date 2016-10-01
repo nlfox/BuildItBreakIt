@@ -6,7 +6,6 @@ from store import Store
 from controller import Controller
 from server import Server
 from interpreter import Interpreter
-from argparse import ArgumentParser
 
 
 def main():
@@ -35,9 +34,6 @@ def main():
 
     hostname = "localhost"
     port = int(arg_port)
-
-    if port < 1024 or port > 65535:
-        sys.exit(255)
 
     store = Store(password)
 
