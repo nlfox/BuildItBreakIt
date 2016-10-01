@@ -58,7 +58,7 @@ class Store:
 
         labellist = label.split('.')
         var = labellist[0]
-        if var in self.local.keys():
+        if var in self.local:
             return True
 
         return self.S.has_permission(username, label, transactionType)
@@ -74,17 +74,17 @@ class Store:
 
         labellist = label.split('.')
         if len(labellist) == 1:
-            if labellist[0] in self.local.keys():
+            if labellist[0] in self.local:
                 val = self.local[labellist[0]]
-            elif labellist[0] in self.fieldsPatch.keys():
+            elif labellist[0] in self.fieldsPatch:
                 val = self.fieldsPatch[labellist[0]]
             else:
                 val = self.fields[labellist[0]]
             
         elif len(labellist) == 2:
-            if labellist[0] in self.local.keys():
+            if labellist[0] in self.local:
                 val = self.local[labellist[0]][labellist[1]]
-            elif labellist[0] in self.fieldsPatch.keys():
+            elif labellist[0] in self.fieldsPatch:
                 val = self.fieldsPatch[labellist[0]][labellist[1]]
             else:
                 val = self.fields[labellist[0]][labellist[1]]
@@ -115,13 +115,13 @@ class Store:
         tags = label.split('.')
 
         if len(tags) == 1:
-            return (local and tags[0] in self.local.keys()) or tags[0] in self.fields.keys() or tags[0] in self.fieldsPatch.keys()
+            return (local and tags[0] in self.local) or tags[0] in self.fields or tags[0] in self.fieldsPatch
         else:
-            if local and tags[0] in self.local.keys():
+            if local and tags[0] in self.local:
                 return type(self.local[tags[0]]) == dict and tags[1] in self.local[tags[0]]
-            elif tags[0] in self.fieldsPatch.keys():
+            elif tags[0] in self.fieldsPatch:
                 return type(self.fieldsPatch[tags[0]]) == dict and tags[1] in self.fieldsPatch[tags[0]]
-            elif tags[0] in self.fields.keys():
+            elif tags[0] in self.fields:
                 return type(self.fields[tags[0]]) == dict and tags[1] in self.fields[tags[0]]
             else:
                 return False
@@ -131,17 +131,17 @@ class Store:
             return None
         
         tags = field.split(".")
-        if tags[0] in self.local.keys():
+        if tags[0] in self.local:
             if len(tags) == 1:
                 return type(self.local[tags[0]])
             else:
                 return type(self.local[tags[0]][tags[1]])
-        elif tags[0] in self.fieldsPatch.keys():
+        elif tags[0] in self.fieldsPatch:
             if len(tags) == 1:
                 return type(self.fieldsPatch[tags[0]])
             else:
                 return type(self.fieldsPatch[tags[0]][tags[1]])
-        elif tags[0] in self.fields.keys():
+        elif tags[0] in self.fields:
             if len(tags) == 1:
                 return type(self.fields[tags[0]])
             else:
