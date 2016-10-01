@@ -66,7 +66,7 @@ class Store:
     def check_password(self, username, password):
         return username in self.users and password == self.users[username]
 
-    def get_field(self, label):
+    def get_field(self, label, reference=False):
         if not self.field_exists(label):
             return ""
 
@@ -90,9 +90,15 @@ class Store:
                 val = self.fields[labellist[0]][labellist[1]]
 
         if type(val) == dict:
-            return dict(val)
+            if reference:
+                return val
+            else:
+                return dict(val)
         elif type(val) == list:
-            return list(val)
+            if reference:
+                return val
+            else:
+                return list(val)
         else:
             return val
 
@@ -171,9 +177,9 @@ class Store:
         self.S.set_default(user)
 
     def append_to(self, field, expr):
-        l = self.get_field(field)
+        l = self.get_field(field, reference=True)
         if type(expr) == list:
             l.extend(expr)
         else:
             l.append(expr)
-        self.set_field(field, l)
+#        self.set_field(field, l)

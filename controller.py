@@ -61,7 +61,7 @@ class Controller:
         self.store.set_field(field, value)
 
     def append_to(self, field, expression):
-        value = self._parse_expression(expression)
+        value = self._parse_expression(expression, reference=True)
         self._assert_access(self.store.has_permission(self.principal, field, "append"))
         self._assert_success(
             self.store.field_exists(field) and
@@ -127,9 +127,9 @@ class Controller:
         self._assert_success(self.store.user_exists(user))
         self.store.set_default(user)
 
-    def _parse_expression(self, expression):
+    def _parse_expression(self, expression, reference=False):
         if type(expression) is LexToken:
-            return self._parse_value(expression)
+            return self._parse_value(expression, reference=reference)
         elif type(expression) is list:
             return expression
         elif type(expression) is dict:
@@ -142,11 +142,11 @@ class Controller:
         else:
             self._error("FAILED")
 
-    def _parse_value(self, value):
+    def _parse_value(self, value, reference=False):
         if value.type == "ID" or value.type == "ID_GROUP":
             self._assert_access(self.store.has_permission(self.principal, value.value, "read"))
             self._assert_success(self.store.field_exists(value.value))
-            return self.store.get_field(value.value)
+            return self.store.get_field(value.value, reference=reference)
         elif value.type == "STRING":
             return str(value.value)
         else:
