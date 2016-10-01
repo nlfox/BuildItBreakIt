@@ -30,17 +30,20 @@ cdef class PySecurityState:
     def discard_transaction(self):
         self.S.discardTransaction()
 
-    def add_user(self, str user):
+    def add_user(self, user):
         self.S.addUser(user)
 
-    def set_default(self, str default):
+    def own(self, user, field):
+        self.S.own(user, field)
+
+    def set_default(self, default):
         self.S.setDefault(default)
 
-    def set_delegation(self, str field, str authority, str permission, str user):
+    def set_delegation(self, field, authority, permission, user):
         self.S.setDelegation(field, authority, permission, user)
 
-    def delete_delegation(self, str field, str authority, str permission, str user):
+    def delete_delegation(self, field, authority, permission, user):
         self.S.deleteDelegation(field, authority, permission, user)
 
-    def has_permission(self, str user, str field, str permission):
+    def has_permission(self, user, field, permission):
         return self.S.hasPermission(user, field, permission)

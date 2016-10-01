@@ -1,5 +1,5 @@
 #!/usr/bin/python2
-from permissions import SecurityState
+from cpp.pypermissions import PySecurityState
 
 class Store:
     def __init__(self, admin_password):
@@ -10,7 +10,7 @@ class Store:
         self.usersPatch = {}
         self.local = {}
 
-        self.S = SecurityState()
+        self.S = PySecurityState()
         self.principal = ""
 
     def __str__(self):

@@ -73,7 +73,7 @@ namespace bibifi {
     }
 
     for (int i = 0; i < 4; i++) {
-      setDelegation(field, "admin", permissions[i], user);
+      setDelegation(field, "", permissions[i], user);
     }
   }
 
@@ -113,38 +113,41 @@ namespace bibifi {
 	}
       }
     } else {
-      delegationsPatch[user].erase(Delegation(field, authority, permission, user));
+      Delegation d (field, authority, permission, user);
+      if (delegationsPatch[user].find(d) != delegationsPatch[user].end()) {
+	delegationsPatch[user].erase(d);
+      }
     }
   }
 
   bool SecurityState::hasPermission(string user, string field, string permission) {
     if (user == "admin") return true;
-
+    
     queue<Delegation> tbs;
     for (set<Delegation>::iterator i = delegationsPatch[user].begin(); i != delegationsPatch[user].end(); i++) {
-      if ((*i).field == field && (*i).permission == permission) {
+      if (((*i).field == field || (*i).field == "all") && (*i).permission == permission) {
 	tbs.push(*i);
       }
     }
     
     for (set<Delegation>::iterator i = delegationsPatch["anyone"].begin(); i != delegationsPatch["anyone"].end(); i++) {
-      if ((*i).field == field && (*i).permission == permission) {
+      if (((*i).field == field || (*i).field == "all") && (*i).permission == permission) {
 	tbs.push(*i);
       }
     }
 
     bool foundPermission = false;
-    while (tbs.size() > 0) {
+    while (!tbs.empty()) {
       Delegation d = tbs.front();
       tbs.pop();
-      if (d.authority == "admin") {
+      if (d.authority == "admin" || d.authority == "") {
 	foundPermission = true;
 	break;
       }
 
       for (set<Delegation>::iterator i = delegationsPatch[d.authority].begin(); i != delegationsPatch[d.authority].end(); i++) {
 	if (((*i).field == field || (*i).field == "all") && (*i).permission == permission) {
-	  tbs.push(d);
+	  tbs.push(*i);
 	}
       }
     }
