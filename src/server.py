@@ -11,7 +11,7 @@ class Server(object):
         self.run = True
         self.connection = None
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        signal.signal(signal.SIGTERM, self.end)
+#        signal.signal(signal.SIGTERM, self.end)
 
     def start(self, interpreter):
         try:
@@ -43,7 +43,7 @@ class Server(object):
 
             # Execute commands
             try:
-                self.connection.sendall(interpreter.accept(result.decode('string-escape')))
+                self.connection.sendall(interpreter.accept(result.decode("string-escape")))
             except:
                 self.end()
             finally:
