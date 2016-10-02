@@ -193,8 +193,8 @@ class Controller:
                 self._assert_success(type(s2) == str)
                 if expression.type == "split":
                     if len(s1) <= len(s2):
-                        return [s1, ""]
-                    return [s1[:len(s2)], s1[len(s2):]]
+                        return { "fst" : s1, "snd" : "" }
+                    return { "fst" : s1[:len(s2)], "snd" : s1[len(s2):] }
                 elif expression.type == "concat":
                     return s1 + s2
             else:
