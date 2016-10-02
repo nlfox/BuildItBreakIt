@@ -70,7 +70,8 @@ class Lexer(object):
         return t
 
     def t_STRFUNC(self, t):
-        r'split|concat|tolower{1,}'
+        r'\b(split)\b|\b(concat)\b|\b(tolower)\b'
+        #| ^ concat$ | ^ tolower$
         return t
 
     def t_LISTFILTER(self, t):

@@ -152,14 +152,20 @@ class Interpreter(object):
         self.parser.expect("IN")
         field = self.parser.expect("ID").value
         self.parser.expect("WITH")
-        func = self.parser.expect("LISTFILTER").value
-        self.parser.expect("LPAREN")
-        expr = self._parse_expr()
-        self.parser.expect("COMMA")
-        filter = self._parse_expr()
-        self.parser.expect("RPAREN")
+        next_token = self.parser.expect("LISTFILTER", "STRING", "ID", "ID_GROUP")
+        if next_token.type == "LISTFILTER":
+            func = next_token.value
+            self.parser.expect("LPAREN")
+            expr = self._parse_expr()
+            self.parser.expect("COMMA")
+            filter = self._parse_expr()
+            self.parser.expect("RPAREN")
+        else:
+            func = None
+            expr = next_token
+            filter = None
         self.operation_queue.append(lambda: self.controller.filtereach(iterator, field, func, expr, filter))
-        self.result.append(_status_json("APPEND"))
+        self.result.append(_status_json("FILTEREACH"))
 
     def _foreach(self):
         y = self.parser.expect("ID").value

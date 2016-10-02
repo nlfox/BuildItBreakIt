@@ -105,28 +105,37 @@ class Controller:
             is_field(iterator) and
             is_field(field))
         l = self.store.get_field(field)
-        fil = self._parse_value(filter)
-        if type(fil) != str:
-            raise TypeError("Arguments can only be strings, not: " + type(fil))
         new_value = []
         if func == "equal":
+            fil = self._parse_value(filter)
             for element in l:
                 self.store.set_local(iterator, element)
                 value = self._parse_expression(expr)
                 if type(value) != str:
                     raise TypeError("Arguments can only be strings, not: " + type(value))
                 if value == fil:
-                    new_value.append(value)
+                    new_value.append(element)
             self.store.remove_local(iterator)
             self.set(field, new_value)
         elif func == "notequal":
+            fil = self._parse_value(filter)
             for element in l:
                 self.store.set_local(iterator, element)
                 value = self._parse_expression(expr)
                 if type(value) != str:
                     raise TypeError("Arguments can only be strings, not: " + type(value))
                 if value != fil:
-                    new_value.append(value)
+                    new_value.append(element)
+            self.store.remove_local(iterator)
+            self.set(field, new_value)
+        elif func == None and filter == None:
+            for element in l:
+                self.store.set_local(iterator, element)
+                value = self._parse_expression(expr)
+                if type(value) != str:
+                    raise TypeError("Arguments can only be strings, not: " + type(value))
+                if value == "":
+                    new_value.append(element)
             self.store.remove_local(iterator)
             self.set(field, new_value)
 
