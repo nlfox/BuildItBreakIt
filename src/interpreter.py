@@ -80,9 +80,9 @@ class Interpreter(object):
             s2 = self.parser.expect("ID", "STRING")
             result = StrFunction("split", s1, s2)
         elif name == "concat":
-            s1 = self.parser.expect("ID", "STRING")
+            s1 = self.parser.expect("ID", "STRING", "ID_GROUP")
             self.parser.expect("COMMA")
-            s2 = self.parser.expect("ID", "STRING")
+            s2 = self.parser.expect("ID", "STRING", "ID_GROUP")
             result = StrFunction("concat", s1, s2)
         elif name == "tolower":
             s1 = self.parser.expect("ID", "STRING")
