@@ -16,12 +16,17 @@ import json
 from parser import Lexer
 import traceback
 
+class StrFunction(object):
+    def __init__(self, type, s1, s2 = None):
+        self.type = type
+        self.s1 = s1
+        self.s2 = s2
 
 class Interpreter(object):
     def __init__(self, controller):
         self.controller = controller
         self.operation_queue = []
-        self.result = ""
+        self.result = []
         self.flag = False
         self.parser = Lexer()
 
@@ -56,12 +61,35 @@ class Interpreter(object):
         return ''.join(self.result)
 
     def _parse_expr(self):
-        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS")
+        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS", "STRFUNC")
         if token.type == "SQUBRACKETS":
             return []
         if token.type == "LCURLYPAREN":
             return self._parse_dict()
+        if token.type == "STRFUNC":
+            return self._parse_str_func(token.value)
         return token
+
+    def _parse_str_func(self, name):
+        result = None
+
+        self.parser.expect("LPAREN")
+        if name == "split":
+            s1 = self.parser.expect("ID", "STRING")
+            self.parser.expect("COMMA")
+            s2 = self.parser.expect("ID", "STRING")
+            result = StrFunction("split", s1, s2)
+        elif name == "concat":
+            s1 = self.parser.expect("ID", "STRING")
+            self.parser.expect("COMMA")
+            s2 = self.parser.expect("ID", "STRING")
+            result = StrFunction("concat", s1, s2)
+        elif name == "tolower":
+            s1 = self.parser.expect("ID", "STRING")
+            result = StrFunction("tolower", s1)
+        self.parser.expect("RPAREN")
+
+        return result
 
     def _parse_dict(self):
         dictionary = {}

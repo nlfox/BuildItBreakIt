@@ -2,6 +2,7 @@
 
 from store import Store
 from lex import LexToken
+from interpreter import StrFunction
 
 
 class Controller:
@@ -139,6 +140,21 @@ class Controller:
                 self._assert_success(type(value) == str)
                 resolved_dict[key] = value
             return resolved_dict
+        elif type(expression) is StrFunction:
+            s1 = self._parse_value(expression.s1)
+            self._assert_success(type(s1) == str)
+            if expression.s2 is not None:
+                s2 = self._parse_value(expression.s2)
+                self._assert_success(type(s2) == str)
+                if expression.type == "split":
+                    if len(s1) <= len(s2):
+                        return [s1, ""]
+                    return [s1[:len(s2)], s1[len(s2):]]
+                elif expression.type == "concat":
+                    return s1 + s2
+            else:
+                self._assert_success(expression.type == "tolower")
+                return s1.lower()
         else:
             self._error("FAILED")
 

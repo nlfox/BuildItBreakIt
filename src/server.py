@@ -44,7 +44,8 @@ class Server(object):
             # Execute commands
             try:
                 self.connection.sendall(interpreter.accept(result.decode("string-escape")))
-            except:
+            except Exception as e:
+                print e.args
                 self.end()
             finally:
                 if self.connection:
