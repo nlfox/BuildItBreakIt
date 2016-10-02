@@ -55,13 +55,32 @@ class Interpreter(object):
             return _status_json(err.args[0])
         return ''.join(self.result)
 
-    def _parse_expr(self):
-        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS")
+    def _parse_expr(self, variable):
+        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS", "STRFUNC")
         if token.type == "SQUBRACKETS":
             return []
         if token.type == "LCURLYPAREN":
             return self._parse_dict()
+        if token.type == "STRFUNC":
+            return self._parse_func(token.value, variable)
         return token
+
+    def _parse_func(self, func, variable):
+        if func == "tolower":
+            self.parser.expect("LPAREN")
+            arg = self.parser.expect("ID", "ID_GROUP", "STRING")
+            self.parser.expect("RPAREN")
+            return lambda: self.controller.tolower(variable, arg)
+        else:
+            self.parser.expect("LPAREN")
+            fstarg = self.parser.expect("ID", "ID_GROUP", "STRING")
+            self.parser.expect("COMMA")
+            sndarg = self.parser.expect("ID", "ID_GROUP", "STRING")
+            self.parser.expect("RPAREN")
+            if func == "concat":
+                return lambda: self.controller.tolower(variable, fstarg, sndarg)
+            else:
+                return lambda: self.controller.split(variable, fstarg, sndarg)
 
     def _parse_dict(self):
         dictionary = {}
@@ -90,7 +109,10 @@ class Interpreter(object):
         variable = self.parser.expect("ID").value
         self.parser.expect("EQUAL")
         expr = self._parse_expr()
-        self.operation_queue.append(lambda: self.controller.set(variable, expr))
+        if type(expr) == dict or type(expr) == list or type(expr) == str:
+            self.operation_queue.append(lambda: self.controller.set(variable, expr))
+        else:
+            self.operation_queue.append(expr)
         self.result.append(_status_json("SET"))
 
     def _change_password(self):
