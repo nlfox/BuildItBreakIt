@@ -32,6 +32,7 @@ class Lexer(object):
                  'RPAREN',
                  'STRING',
                  'COMMAND',
+                 'STRFUNC',
                  'TERMINATOR',
                  'SQUBRACKETS',
                  'ID_GROUP',
@@ -65,6 +66,10 @@ class Lexer(object):
     def t_COMMAND(self, t):
         r'(create\ +principal|change\ +password|append\ +to|set\ +delegation|set|delete\ +delegation|default\ +delegator|local|return|exit|foreach)\ {1,}'
         t.value = " ".join(t.value.split())
+        return t
+
+    def t_STRFUNC(self, t):
+        r'split|concat|tolower{1,}'
         return t
 
     def t_PROG(self, t):
@@ -146,6 +151,7 @@ class Lexer(object):
 
     def next(self):
         next = self.gen.next()
+        print next
         return next
 
     def __init__(self, data="", **kwargs):
