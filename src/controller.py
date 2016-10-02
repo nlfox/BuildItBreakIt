@@ -94,6 +94,42 @@ class Controller:
         self.store.remove_local(iterator)
         self.set(field, new_value)
 
+    def filtereach(self, iterator, field, func, expr, filter):
+        self._assert_access(
+            self.store.has_permission(self.principal, field, "read") and
+            self.store.has_permission(self.principal, field, "write"))
+        self._assert_success(
+            self.store.field_exists(field) and
+            self.store.field_type(field) == list and
+            not self.store.field_exists(iterator) and
+            is_field(iterator) and
+            is_field(field))
+        l = self.store.get_field(field)
+        fil = self._parse_value(filter)
+        if type(fil) != str:
+            raise TypeError("Arguments can only be strings, not: " + type(fil))
+        new_value = []
+        if func == "equal":
+            for element in l:
+                self.store.set_local(iterator, element)
+                value = self._parse_expression(expr)
+                if type(value) != str:
+                    raise TypeError("Arguments can only be strings, not: " + type(value))
+                if value == fil:
+                    new_value.append(value)
+            self.store.remove_local(iterator)
+            self.set(field, new_value)
+        elif func == "notequal":
+            for element in l:
+                self.store.set_local(iterator, element)
+                value = self._parse_expression(expr)
+                if type(value) != str:
+                    raise TypeError("Arguments can only be strings, not: " + type(value))
+                if value != fil:
+                    new_value.append(value)
+            self.store.remove_local(iterator)
+            self.set(field, new_value)
+
     def set_delegation(self, field, authority, permission, user):
         self._assert_access(
             (self.principal == "admin" or self.principal == authority) and
