@@ -147,6 +147,20 @@ class Interpreter(object):
         self.operation_queue.append(lambda: self.controller.local(variable, expr))
         self.result.append(_status_json("LOCAL"))
 
+    def _filtereach(self):
+        variable = self.parser.expect("ID").value
+        self.parser.expect("IN")
+        field = self.parser.expect("ID").value
+        self.parser.expect("WITH")
+        func = self.parser.expect("LISTFILTER").value
+        self.parser.expect("LPAREN")
+        seed = self._parse_expr()
+        self.parser.expect("COMMA")
+        filter = self._parse_expr()
+        self.parser.expect("RPAREN")
+        self.operation_queue.append(lambda: self.controller.filtereach(variable, field, func, seed, filter))
+        self.result.append(_status_json("APPEND"))
+
     def _foreach(self):
         y = self.parser.expect("ID").value
         self.parser.expect("IN")
