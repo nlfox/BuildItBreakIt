@@ -16,11 +16,7 @@ namespace bibifi {
 
     Delegation(std::string, std::string, std::string, std::string);
 
-    std::string getString() const;
-
     bool operator ==(const Delegation&) const;
-    bool operator <(const Delegation&) const;
-    bool operator >(const Delegation&) const;
   };
   
   class SecurityState {
@@ -39,13 +35,15 @@ namespace bibifi {
   private:
     std::string permissions [4] = {"delegate", "read", "write", "append"};
     
-    std::map<std::string, std::set<Delegation> > delegations;
+    std::map<std::string, std::vector<Delegation> > delegations;
     std::string defaultDel;
     std::set<std::string> identifiers;
 
-    std::map<std::string, std::set<Delegation> > delegationsPatch;
+    std::map<std::string, std::vector<Delegation> > delegationsPatch;
     std::string defaultPatch;
     std::set<std::string> identifiersPatch;
+
+    std::map<std::string, bool> cache;
   };
 }
 
