@@ -38,6 +38,7 @@ class Lexer(object):
                  'ID_GROUP',
                  'PROG',
                  'NEWLINE',
+                 'LISTFILTER',
                  'EQUAL',
                  'ARROW',
                  'LCURLYPAREN',
@@ -70,6 +71,10 @@ class Lexer(object):
 
     def t_STRFUNC(self, t):
         r'split|concat|tolower{1,}'
+        return t
+
+    def t_LISTFILTER(self, t):
+        r'equal|notequal{1,}'
         return t
 
     def t_PROG(self, t):
