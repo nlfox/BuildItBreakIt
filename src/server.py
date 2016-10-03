@@ -3,6 +3,7 @@
 import socket
 import sys
 import signal
+import time
 from parser import Lexer
 
 class Server(object):
@@ -28,9 +29,10 @@ class Server(object):
                 continue
 
             # Accept data
-            self.sock.settimeout(30.0)
+            self.connection.settimeout(30.0)
             try:
                 result = ""
+                start = time.clock()
                 while True:
                     data = self.connection.recv(4096)
                     result += data
