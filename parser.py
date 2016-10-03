@@ -32,11 +32,13 @@ class Lexer(object):
                  'RPAREN',
                  'STRING',
                  'COMMAND',
+                 'STRFUNC',
                  'TERMINATOR',
                  'SQUBRACKETS',
                  'ID_GROUP',
                  'PROG',
                  'NEWLINE',
+                 'LISTFILTER',
                  'EQUAL',
                  'ARROW',
                  'LCURLYPAREN',
@@ -63,8 +65,17 @@ class Lexer(object):
     # This position has the highest priority
     # TODO: add more command
     def t_COMMAND(self, t):
-        r'(create\ +principal|change\ +password|append\ +to|set\ +delegation|set|delete\ +delegation|default\ +delegator|local|return|exit|foreach)\ {1,}'
+        r'(create\ +principal|change\ +password|append\ +to|set\ +delegation|set|delete\ +delegation|default\ +delegator|local|return|exit|foreach|filtereach)\ {1,}'
         t.value = " ".join(t.value.split())
+        return t
+
+    def t_STRFUNC(self, t):
+        r'\b(split)\b|\b(concat)\b|\b(tolower)\b'
+        #| ^ concat$ | ^ tolower$
+        return t
+
+    def t_LISTFILTER(self, t):
+        r'equal|notequal{1,}'
         return t
 
     def t_PROG(self, t):
@@ -146,6 +157,7 @@ class Lexer(object):
 
     def next(self):
         next = self.gen.next()
+        print next
         return next
 
     def __init__(self, data="", **kwargs):

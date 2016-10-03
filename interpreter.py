@@ -16,12 +16,17 @@ import json
 from parser import Lexer
 import traceback
 
+class StrFunction(object):
+    def __init__(self, type, s1, s2 = None):
+        self.type = type
+        self.s1 = s1
+        self.s2 = s2
 
 class Interpreter(object):
     def __init__(self, controller):
         self.controller = controller
         self.operation_queue = []
-        self.result = ""
+        self.result = []
         self.flag = False
         self.parser = Lexer()
 
@@ -56,12 +61,35 @@ class Interpreter(object):
         return ''.join(self.result)
 
     def _parse_expr(self):
-        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS")
+        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS", "STRFUNC")
         if token.type == "SQUBRACKETS":
             return []
         if token.type == "LCURLYPAREN":
             return self._parse_dict()
+        if token.type == "STRFUNC":
+            return self._parse_str_func(token.value)
         return token
+
+    def _parse_str_func(self, name):
+        result = None
+
+        self.parser.expect("LPAREN")
+        if name == "split":
+            s1 = self.parser.expect("ID", "STRING")
+            self.parser.expect("COMMA")
+            s2 = self.parser.expect("ID", "STRING")
+            result = StrFunction("split", s1, s2)
+        elif name == "concat":
+            s1 = self.parser.expect("ID", "STRING", "ID_GROUP")
+            self.parser.expect("COMMA")
+            s2 = self.parser.expect("ID", "STRING", "ID_GROUP")
+            result = StrFunction("concat", s1, s2)
+        elif name == "tolower":
+            s1 = self.parser.expect("ID", "STRING")
+            result = StrFunction("tolower", s1)
+        self.parser.expect("RPAREN")
+
+        return result
 
     def _parse_dict(self):
         dictionary = {}
@@ -118,6 +146,26 @@ class Interpreter(object):
         expr = self._parse_expr()
         self.operation_queue.append(lambda: self.controller.local(variable, expr))
         self.result.append(_status_json("LOCAL"))
+
+    def _filtereach(self):
+        iterator = self.parser.expect("ID").value
+        self.parser.expect("IN")
+        field = self.parser.expect("ID").value
+        self.parser.expect("WITH")
+        next_token = self.parser.expect("LISTFILTER", "STRING", "ID", "ID_GROUP")
+        if next_token.type == "LISTFILTER":
+            func = next_token.value
+            self.parser.expect("LPAREN")
+            expr = self._parse_expr()
+            self.parser.expect("COMMA")
+            filter = self._parse_expr()
+            self.parser.expect("RPAREN")
+        else:
+            func = None
+            expr = next_token
+            filter = None
+        self.operation_queue.append(lambda: self.controller.filtereach(iterator, field, func, expr, filter))
+        self.result.append(_status_json("FILTEREACH"))
 
     def _foreach(self):
         y = self.parser.expect("ID").value

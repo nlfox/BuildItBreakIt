@@ -43,8 +43,8 @@ class Server(object):
 
             # Execute commands
             try:
-                self.connection.sendall(interpreter.accept(result.decode('string-escape')))
-            except:
+                self.connection.sendall(interpreter.accept(result.decode("string-escape")))
+            except Exception as e:
                 self.end()
             finally:
                 if self.connection:

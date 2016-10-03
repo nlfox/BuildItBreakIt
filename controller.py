@@ -2,6 +2,7 @@
 
 from store import Store
 from lex import LexToken
+from interpreter import StrFunction
 
 
 class Controller:
@@ -93,6 +94,51 @@ class Controller:
         self.store.remove_local(iterator)
         self.set(field, new_value)
 
+    def filtereach(self, iterator, field, func, expr, filter):
+        self._assert_access(
+            self.store.has_permission(self.principal, field, "read") and
+            self.store.has_permission(self.principal, field, "write"))
+        self._assert_success(
+            self.store.field_exists(field) and
+            self.store.field_type(field) == list and
+            not self.store.field_exists(iterator) and
+            is_field(iterator) and
+            is_field(field))
+        l = self.store.get_field(field)
+        new_value = []
+        if func == "equal":
+            fil = self._parse_value(filter)
+            for element in l:
+                self.store.set_local(iterator, element)
+                value = self._parse_expression(expr)
+                if type(value) != str:
+                    raise TypeError("Arguments can only be strings, not: " + type(value))
+                if value == fil:
+                    new_value.append(element)
+            self.store.remove_local(iterator)
+            self.set(field, new_value)
+        elif func == "notequal":
+            fil = self._parse_value(filter)
+            for element in l:
+                self.store.set_local(iterator, element)
+                value = self._parse_expression(expr)
+                if type(value) != str:
+                    raise TypeError("Arguments can only be strings, not: " + type(value))
+                if value != fil:
+                    new_value.append(element)
+            self.store.remove_local(iterator)
+            self.set(field, new_value)
+        elif func == None and filter == None:
+            for element in l:
+                self.store.set_local(iterator, element)
+                value = self._parse_expression(expr)
+                if type(value) != str:
+                    raise TypeError("Arguments can only be strings, not: " + type(value))
+                if value == "":
+                    new_value.append(element)
+            self.store.remove_local(iterator)
+            self.set(field, new_value)
+
     def set_delegation(self, field, authority, permission, user):
         self._assert_access(
             (self.principal == "admin" or self.principal == authority) and
@@ -139,6 +185,21 @@ class Controller:
                 self._assert_success(type(value) == str)
                 resolved_dict[key] = value
             return resolved_dict
+        elif type(expression) is StrFunction:
+            s1 = self._parse_value(expression.s1)
+            self._assert_success(type(s1) == str)
+            if expression.s2 is not None:
+                s2 = self._parse_value(expression.s2)
+                self._assert_success(type(s2) == str)
+                if expression.type == "split":
+                    if len(s1) <= len(s2):
+                        return { "fst" : s1, "snd" : "" }
+                    return { "fst" : s1[:len(s2)], "snd" : s1[len(s2):] }
+                elif expression.type == "concat":
+                    return (s1 + s2)[:65535]
+            else:
+                self._assert_success(expression.type == "tolower")
+                return s1.lower()
         else:
             self._error("FAILED")
 
