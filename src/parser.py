@@ -21,6 +21,7 @@ class Lexer(object):
         'delegate': 'RIGHT',
         'password': "PASSWORD",
         'all': "ALL",
+        'let': "LET",
     }
 
     # List of token names.   This is always required
@@ -31,6 +32,7 @@ class Lexer(object):
                  'LPAREN',
                  'RPAREN',
                  'STRING',
+                 'LET',
                  'COMMAND',
                  'STRFUNC',
                  'TERMINATOR',
@@ -61,6 +63,7 @@ class Lexer(object):
     t_TERMINATOR = r'\*\*\*'
     t_RIGHT = r'\ {1,}(read|write|append|delegate)'
     t_ALL = r'\ {1,}all\ {1,}'
+    t_LET = r'\ {1,}let\ {1,}'
 
     # This position has the highest priority
     # TODO: add more command

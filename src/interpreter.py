@@ -15,6 +15,7 @@
 import json
 from parser import Lexer
 import traceback
+import recursion
 
 class StrFunction(object):
     def __init__(self, type, s1, s2 = None):
@@ -55,20 +56,33 @@ class Interpreter(object):
                   #  raise NotImplementedError("Unknown command: " + token.value)
 
         except RuntimeError as err:
-#            traceback.print_exc()
+            traceback.print_exc()
             self.operation_queue = []
             return _status_json(err.args[0])
         return ''.join(self.result)
 
     def _parse_expr(self):
-        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS", "STRFUNC")
+        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS", "STRFUNC", "LET")
+        print token.type
+        print token.value
         if token.type == "SQUBRACKETS":
             return []
         if token.type == "LCURLYPAREN":
             return self._parse_dict()
         if token.type == "STRFUNC":
             return self._parse_str_func(token.value)
+        if token.type == "LET":
+            return self._parse_let()
         return token
+
+    def _parse_let(self):
+        id = self.parser.expect("ID")
+        self.parser.expect("EQUAL")
+        expr1 = self._parse_expr()
+        self.parser.expect("IN")
+        expr2 = self._parse_expr()
+        r = recursion.Recursion(id.value, expr1, expr2)
+        return r
 
     def _parse_str_func(self, name):
         result = None

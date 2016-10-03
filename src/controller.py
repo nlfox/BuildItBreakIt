@@ -3,6 +3,7 @@
 from store import Store
 from lex import LexToken
 from interpreter import StrFunction
+import recursion
 
 
 class Controller:
@@ -76,6 +77,9 @@ class Controller:
         value = self._parse_expression(expression)
         self._assert_success(is_field(field) and not self.store.field_exists(field))
         self.store.set_local(field, value)
+
+    def remove_local(self, field):
+        self.store.remove_local(field)
 
     def foreach(self, iterator, field, expression):
         self._assert_access(
@@ -202,7 +206,13 @@ class Controller:
             else:
                 self._assert_success(expression.type == "tolower")
                 return s1.lower()
+        elif isinstance(expression, recursion.Recursion):
+            self.local(expression.id, expression.expr1)
+            result = self._parse_expression(expression.expr2)
+            self.remove_local(expression.id)
+            return result
         else:
+            print expression
             self._error("FAILED")
 
     def _parse_value(self, value, reference=False):
