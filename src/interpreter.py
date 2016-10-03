@@ -67,15 +67,13 @@ class Interpreter(object):
                   #  raise NotImplementedError("Unknown command: " + token.value)
 
         except RuntimeError as err:
-            traceback.print_exc()
+#            traceback.print_exc()
             self.operation_queue = []
             return _status_json(err.args[0])
         return ''.join(self.result)
 
     def _parse_expr(self):
         token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS", "STRFUNC", "LET", "LISTFILTER")
-        print token.type
-        print token.value
         if token.type == "SQUBRACKETS":
             return []
         if token.type == "LCURLYPAREN":
