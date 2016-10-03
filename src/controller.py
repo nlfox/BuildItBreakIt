@@ -2,8 +2,7 @@
 
 from store import Store
 from lex import LexToken
-from interpreter import StrFunction
-import recursion
+from interpreter import StrFunction, ListFilter, Recursion
 
 
 class Controller:
@@ -100,50 +99,29 @@ class Controller:
         self.store.remove_local(iterator)
         self.set(field, new_value)
 
-    def filtereach(self, iterator, field, func, expr, filter):
+    def filtereach(self, iterator, field, expr):
         self._assert_access(
             self.store.has_permission(self.principal, field, "read") and
-            self.store.has_permission(self.principal, field, "write"))
+            self.store.has_permission(self.principal, field, "write")
+            )
         self._assert_success(
             self.store.field_exists(field) and
             self.store.field_type(field) == list and
             not self.store.field_exists(iterator) and
             is_field(iterator) and
-            is_field(field))
-        l = self.store.get_field(field)
-        new_value = []
-        if func == "equal":
-            fil = self._parse_value(filter)
-            for element in l:
-                self.store.set_local(iterator, element)
-                value = self._parse_expression(expr)
-                if type(value) != str:
-                    raise TypeError("Arguments can only be strings, not: " + type(value))
-                if value == fil:
-                    new_value.append(element)
-            self.store.remove_local(iterator)
-            self.set(field, new_value)
-        elif func == "notequal":
-            fil = self._parse_value(filter)
-            for element in l:
-                self.store.set_local(iterator, element)
-                value = self._parse_expression(expr)
-                if type(value) != str:
-                    raise TypeError("Arguments can only be strings, not: " + type(value))
-                if value != fil:
-                    new_value.append(element)
-            self.store.remove_local(iterator)
-            self.set(field, new_value)
-        elif func == None and filter == None:
-            for element in l:
-                self.store.set_local(iterator, element)
-                value = self._parse_expression(expr)
-                if type(value) != str:
-                    raise TypeError("Arguments can only be strings, not: " + type(value))
-                if value == "":
-                    new_value.append(element)
-            self.store.remove_local(iterator)
-            self.set(field, new_value)
+            is_field(field)
+            )
+
+        new_list = []
+        for element in self.store.get_field(field):
+            self.store.set_local(iterator, element)
+            result = self._parse_expression(expr)
+            print result
+            if type(result) == str and result == "":
+                new_list.append(element)
+
+        self.store.remove_local(iterator)
+        self.store.set_field(field, new_list)
 
     def set_delegation(self, field, authority, permission, user):
         self._assert_access(
@@ -206,11 +184,22 @@ class Controller:
             else:
                 self._assert_success(expression.type == "tolower")
                 return s1.lower()
-        elif isinstance(expression, recursion.Recursion):
+        elif type(expression) is Recursion:
             self.local(expression.id, expression.expr1)
             result = self._parse_expression(expression.expr2)
             self.remove_local(expression.id)
             return result
+        elif type(expression) is ListFilter:
+            if expression.name == "EQUAL":
+                if self._parse_value(expression.firstarg) == self._parse_value(expression.secondarg):
+                    return ""
+                else:
+                    return "0"
+            else:
+                if self._parse_value(expression.firstarg) != self._parse_value(expression.secondarg):
+                    return ""
+                else:
+                    return "0"
         else:
             print expression
             self._error("FAILED")

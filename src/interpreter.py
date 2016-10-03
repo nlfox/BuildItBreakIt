@@ -15,13 +15,24 @@
 import json
 from parser import Lexer
 import traceback
-import recursion
 
 class StrFunction(object):
     def __init__(self, type, s1, s2 = None):
         self.type = type
         self.s1 = s1
         self.s2 = s2
+
+class ListFilter(object):
+    def __init__(self, name, firstarg, secondarg):
+        self.name = name
+        self.firstarg = firstarg
+        self.secondarg = secondarg
+
+class Recursion(object):
+    def __init__(self, id, expr1, expr2):
+        self.id = id
+        self.expr1 = expr1
+        self.expr2 = expr2
 
 class Interpreter(object):
     def __init__(self, controller):
@@ -62,7 +73,7 @@ class Interpreter(object):
         return ''.join(self.result)
 
     def _parse_expr(self):
-        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS", "STRFUNC", "LET")
+        token = self.parser.expect("ID", "ID_GROUP", "STRING", "LCURLYPAREN", "SQUBRACKETS", "STRFUNC", "LET", "LISTFILTER")
         print token.type
         print token.value
         if token.type == "SQUBRACKETS":
@@ -71,6 +82,8 @@ class Interpreter(object):
             return self._parse_dict()
         if token.type == "STRFUNC":
             return self._parse_str_func(token.value)
+        if token.type == "LISTFILTER":
+            return self._parse_eq_func(token.value)
         if token.type == "LET":
             return self._parse_let()
         return token
@@ -81,17 +94,26 @@ class Interpreter(object):
         expr1 = self._parse_expr()
         self.parser.expect("IN")
         expr2 = self._parse_expr()
-        r = recursion.Recursion(id.value, expr1, expr2)
+        r = Recursion(id.value, expr1, expr2)
         return r
+
+    def _parse_eq_func(self, name):
+        self.parser.expect("LPAREN")
+        s1 = self.parser.expect("ID", "ID_GROUP", "STRING")
+        self.parser.expect("COMMA")
+        s2 = self.parser.expect("ID", "ID_GROUP", "STRING")
+        self.parser.expect("RPAREN")
+
+        return ListFilter(name, s1, s2)
 
     def _parse_str_func(self, name):
         result = None
 
         self.parser.expect("LPAREN")
         if name == "split":
-            s1 = self.parser.expect("ID", "STRING")
+            s1 = self.parser.expect("ID", "STRING", "ID_GROUP")
             self.parser.expect("COMMA")
-            s2 = self.parser.expect("ID", "STRING")
+            s2 = self.parser.expect("ID", "STRING", "ID_GROUP")
             result = StrFunction("split", s1, s2)
         elif name == "concat":
             s1 = self.parser.expect("ID", "STRING", "ID_GROUP")
@@ -99,7 +121,7 @@ class Interpreter(object):
             s2 = self.parser.expect("ID", "STRING", "ID_GROUP")
             result = StrFunction("concat", s1, s2)
         elif name == "tolower":
-            s1 = self.parser.expect("ID", "STRING")
+            s1 = self.parser.expect("ID", "STRING", "ID_GROUP")
             result = StrFunction("tolower", s1)
         self.parser.expect("RPAREN")
 
@@ -166,19 +188,9 @@ class Interpreter(object):
         self.parser.expect("IN")
         field = self.parser.expect("ID").value
         self.parser.expect("WITH")
-        next_token = self.parser.expect("LISTFILTER", "STRING", "ID", "ID_GROUP")
-        if next_token.type == "LISTFILTER":
-            func = next_token.value
-            self.parser.expect("LPAREN")
-            expr = self._parse_expr()
-            self.parser.expect("COMMA")
-            filter = self._parse_expr()
-            self.parser.expect("RPAREN")
-        else:
-            func = None
-            expr = next_token
-            filter = None
-        self.operation_queue.append(lambda: self.controller.filtereach(iterator, field, func, expr, filter))
+        expr = self._parse_expr()
+        
+        self.operation_queue.append(lambda: self.controller.filtereach(iterator, field, expr))
         self.result.append(_status_json("FILTEREACH"))
 
     def _foreach(self):
