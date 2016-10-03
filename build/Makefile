@@ -1,5 +1,5 @@
 all:
-	make -C ../src/cpp $@
+	make -C ./src/cpp $@
 
 clean:
-	make -C ../src/cpp $@
+	make -C ./src/cpp $@
