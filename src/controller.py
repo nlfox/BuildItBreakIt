@@ -64,7 +64,7 @@ class Controller:
         self.store.set_field(field, value)
 
     def append_to(self, field, expression):
-        value = self._parse_expression(expression, reference=True)
+        value = self._parse_expression(expression, reference=False)
         self._assert_access(self.store.has_permission(self.principal, field, "append"))
         self._assert_success(
             self.store.field_exists(field) and
@@ -190,7 +190,7 @@ class Controller:
             self.remove_local(expression.id)
             return result
         elif type(expression) is ListFilter:
-            if expression.name == "EQUAL":
+            if expression.name == "equal":
                 if self._parse_value(expression.firstarg) == self._parse_value(expression.secondarg):
                     return ""
                 else:
