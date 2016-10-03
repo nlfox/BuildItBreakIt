@@ -87,7 +87,7 @@ namespace bibifi {
       }
     } else {
       Delegation d (field, authority, permission, user);
-      auto i = find(delegationsPatch[user].begin(), delegationsPatch[user].end(), d);
+      vector<Delegation>::iterator i = find(delegationsPatch[user].begin(), delegationsPatch[user].end(), d);
       if (i == delegationsPatch[user].end()) {
 	delegationsPatch[user].push_back(d);
       }
@@ -109,7 +109,7 @@ namespace bibifi {
       }
     } else {
       Delegation d (field, authority, permission, user);
-      auto i = find(delegationsPatch[user].begin(), delegationsPatch[user].end(), d);
+      vector<Delegation>::iterator i = find(delegationsPatch[user].begin(), delegationsPatch[user].end(), d);
       if (i != delegationsPatch[user].end()) {
 	cache.clear();
 	delegationsPatch[user].erase(i);
