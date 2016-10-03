@@ -51,6 +51,8 @@ class Controller:
     def get_value(self, token):
         # evaluate token value and return that
         if type(token) is dict or type(token) is list:
+            for key in token:
+                token[key] = self._parse_expression(token[key])
             return token
         else:
             return self._parse_value(token)
