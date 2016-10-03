@@ -196,7 +196,7 @@ class Controller:
                         return { "fst" : s1, "snd" : "" }
                     return { "fst" : s1[:len(s2)], "snd" : s1[len(s2):] }
                 elif expression.type == "concat":
-                    return s1 + s2
+                    return (s1 + s2)[:65535]
             else:
                 self._assert_success(expression.type == "tolower")
                 return s1.lower()
