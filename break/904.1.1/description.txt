@@ -1,0 +1,3 @@
+According to the specification, a principal only has a permission on a field if it is delegated that permission by a principal that has that permission to begin with. Therefore, although principals alice and bob are allowed to delegate read on x to each other, neither has the permission to begin with and neither has the permission afterwards. A read attempt from alice should result in DENIED.
+
+The team implemented the permission check as a simple graph search, which returns true if there's a chain of delegations ending with admin. However, they forgot to store a visited set of principals, so a closed loop of permissions results in an infinite loop.
