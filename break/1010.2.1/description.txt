@@ -1,0 +1,1 @@
+The program doesn't rollback at all when an issue occurs
