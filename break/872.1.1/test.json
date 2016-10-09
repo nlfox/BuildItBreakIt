@@ -1,0 +1,14 @@
+{
+    "type": "security",
+    "target_team": 872,
+    "arguments": {
+	"argv": [
+	    "%PORT%",
+	    "admin"
+	]
+    },
+    "programs": [
+	{"program": ":\n***\n"},
+	{"program": "as principal admin password \"admin\" do\nreturn \"this\"\n***\n"}
+    ]
+}
