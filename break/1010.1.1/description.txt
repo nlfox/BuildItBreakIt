@@ -1,0 +1,2 @@
+Program fails to close the connection within 30 seconds.
+This enables an attacker to block all communications with the program.
