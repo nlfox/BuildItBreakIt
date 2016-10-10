@@ -1,0 +1,1 @@
+Anyone should be the initial default delegator, so all new users aquire the permissions given to anyone. In this implemtation, anyone is not set as the default delegator.
