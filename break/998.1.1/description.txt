@@ -1,0 +1,1 @@
+Server is responding to Bob over variable x with DENIED, even though admin has passed read rights to Bob and he should be able to read x.
