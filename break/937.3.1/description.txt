@@ -1,0 +1,1 @@
+Anyone is a full user who can log in and do stuff. This implementation treats it only as a keyword.
