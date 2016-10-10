@@ -1,0 +1,15 @@
+{
+    "type": "security",
+    "target_team": 872,
+    "arguments": {
+	"argv": [
+	    "%PORT%",
+	    "admin"
+	]
+    },
+    "programs": [
+	{"program": "as principal admin password \"admin\" do\ncreate principal alice \"alice\"\nset x = \"this\"\nset delegation x admin read -> alice\nreturn x\n***\n"},
+	{"program": "as principal alice password \"alice\" do\ndelete delegation all admin read -> alice\nreturn \"that\"\n***\n"},
+	{"program": "as principal alice password \"alice\" do\nreturn x\n***\n"}
+    ]
+}
