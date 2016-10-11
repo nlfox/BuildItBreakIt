@@ -6,6 +6,7 @@
         "base64": false
     },
     "programs": [
-        {"program": "as principal admin password \"pass\" do\nset y = []\nappend to y with {name=\"lukas\"}\nreturn y.name\n***", "base64": false}
+        {"program": "as principal admin password \"pass\" do\nset y = []\nappend to y with {name=\"lukas\"}\nreturn y.name\n***"},
+        {"program": "as principal admin password \"pass\" do\nreturn \"this\"\n***\n"}
     ]
 }
