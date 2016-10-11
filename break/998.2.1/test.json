@@ -1,0 +1,11 @@
+{
+    "type": "crash",
+    "target_team": 998,
+    "arguments": {
+        "argv": ["%PORT%", "pass"],
+        "base64": false
+    },
+    "programs": [
+        {"program": "as principal admin password \"pass\" do\nset y = []\nappend to y with {name=\"lukas\"}\nreturn y.name\n***", "base64": false}
+    ]
+}
