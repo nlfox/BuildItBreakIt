@@ -1,6 +1,6 @@
 {
     "type": "security",
-    "target_team": 1010,
+    "target_team": 909,
     "arguments": {
         "argv": [
             "%PORT%"
