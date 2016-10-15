@@ -1,0 +1,1 @@
+Server crashing when requesting a attribute of a variable of type list.
