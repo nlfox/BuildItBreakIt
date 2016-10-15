@@ -1,0 +1,1 @@
+Principals should be able to revoke their own privileges.
