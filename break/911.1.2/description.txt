@@ -1,0 +1,1 @@
+Login as non-existant user should fail, not be denied.
