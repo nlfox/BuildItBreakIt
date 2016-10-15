@@ -1,0 +1,1 @@
+Anyone should be a real principal whose password is unspecified, so the login should be denied. Instead, anyone doesn't exist, so it returns failed.
