@@ -1,0 +1,1 @@
+Login attempt as non-existent principal should fail, not deny.
