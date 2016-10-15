@@ -1,0 +1,1 @@
+The default delegator doesn't need delegate permissions for its permissions to transfer to new principals.
