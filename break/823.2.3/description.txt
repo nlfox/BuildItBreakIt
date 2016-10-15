@@ -1,0 +1,1 @@
+Anyone should be a full user capable of logging in and having its password changed.
