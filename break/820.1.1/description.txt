@@ -1,0 +1,1 @@
+Denying access to a variable crashes the server instead of returning DENIED.
