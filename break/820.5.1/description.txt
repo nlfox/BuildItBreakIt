@@ -1,0 +1,1 @@
+Principals cannot delete delegations betowed by other principals. This implementaion allows every user to revoke any permissions on a variable if it has delegate access
