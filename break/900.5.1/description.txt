@@ -1,0 +1,1 @@
+Since the program checks permissions via string search, principals get acces to variables with their name if any delegation is performed on them.
