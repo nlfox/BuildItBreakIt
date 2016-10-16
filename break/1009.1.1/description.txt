@@ -1,0 +1,1 @@
+Nothing in the spec says everyone gains permissions given to the default delegator. They should only inherit the permissions it has on their creation.
