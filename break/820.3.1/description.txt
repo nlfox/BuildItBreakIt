@@ -1,0 +1,1 @@
+According to rule 3 of enforcing permissions, a principal must receive the permission from a principal that already has it. In this implementation, any delegation, regardless of origin, gives the permission.
