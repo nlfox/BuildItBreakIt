@@ -1,0 +1,14 @@
+{
+    "type": "security",
+    "target_team": 998,
+    "arguments": {
+	"argv": [
+	    "%PORT%",
+	    "admin"
+	]
+    },
+    "programs": [
+	{"program": "as principal admin password \"admin\" do\ncreate principal alice \"alice\"\nreturn \"this\"\n***\n"},
+	{"program": "as principal alice password \"alice\" do\ncreate principal _bob \"bob\"\nreturn \"that\"\n***\n"}
+    ]
+}

@@ -1,0 +1,1 @@
+Should fail on invalid principal name, not deny.
