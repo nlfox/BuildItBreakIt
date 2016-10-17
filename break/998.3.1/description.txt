@@ -1,0 +1,1 @@
+Principals gain all rights to fields with their name.
