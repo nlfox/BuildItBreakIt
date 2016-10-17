@@ -1,0 +1,1 @@
+When a new principal is created, only the rights the default delegators has should be transferred. This implementation transfers all rights whether it has them or not.
