@@ -1,0 +1,1 @@
+Principals can get permissions from unpriveleged principals.
