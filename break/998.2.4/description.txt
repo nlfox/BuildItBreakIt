@@ -1,0 +1,1 @@
+Permissions given to anyone are actually given to anyone, regardless of whether or not it's the default delegator.
