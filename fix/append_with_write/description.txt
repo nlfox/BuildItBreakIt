@@ -1,0 +1,3 @@
+In the exploit break-151 (29962), the attacker delegates write access to a non-admin user and then attempts to append to the variable. Since we mistakenly restricted append access to only users with append permissions, we denied this attmept when it should have succeeded.
+
+By changing the permission scheme for the append command, we have allowed append with write access.

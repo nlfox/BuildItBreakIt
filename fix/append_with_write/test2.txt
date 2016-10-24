@@ -1,0 +1,4 @@
+as principal alice password "alice" do
+append to x with "hello"
+return "this"
+***
