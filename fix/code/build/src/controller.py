@@ -65,7 +65,10 @@ class Controller:
 
     def append_to(self, field, expression):
         value = self._parse_expression(expression, reference=False)
-        self._assert_access(self.store.has_permission(self.principal, field, "append"))
+        self._assert_access(
+            self.store.has_permission(self.principal, field, "append") or
+            self.store.has_permission(self.principal, field, "write")
+        )
         self._assert_success(
             self.store.field_exists(field) and
             self.store.field_type(field) == list and
