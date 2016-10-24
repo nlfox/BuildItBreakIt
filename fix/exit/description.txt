@@ -1,0 +1,1 @@
+This family of issues all rely on our bad parsing of the exit command. Most primitive commands require a space after the first word, so the regular expression reflected this. Unfortunately, we failed to take into account the different syntax of the exit command. By changing the regular expression, we've fixed the issue.
