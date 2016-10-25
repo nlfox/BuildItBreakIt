@@ -1,0 +1,3 @@
+In this fix, we address the bug exploited by break14_946 (26821). When we parse the program, we append each operation to an operation queue so they only get executed after the whole program has been successfully parsed. Somehow, we forgot to do this for authentication, so the attacker could elicit DENIED from a bad password even if the program has a syntax error later. By appending the authentication command to the operation queue, we fixed this issue.
+
+Four of the exploits targeting this issue were written by team 0xCC. These programs differ only minorly in form and we will dispute the validity of these exploits.
