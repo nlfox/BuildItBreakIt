@@ -146,7 +146,7 @@ class Interpreter(object):
         self.parser.expect("PASSWORD")
         password = self.parser.expect("STRING").value
         self.parser.expect("DO")
-        self.controller.begin_transaction(username, password)
+        self.operation_queue.append(lambda: self.controller.begin_transaction(username, password))
 
     def _set(self):
         variable = self.parser.expect("ID").value
