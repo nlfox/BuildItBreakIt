@@ -44,8 +44,8 @@ class Controller:
         self.store.modify_principal(username, password)
 
     def change_password(self, username, password):
-        self._assert_access(self.principal == "admin" or self.principal == username)
         self._assert_success(self.store.user_exists(username))
+        self._assert_access(self.principal == "admin" or self.principal == username)
         self.store.modify_principal(username, password)
 
     def get_value(self, token):
