@@ -144,7 +144,7 @@ class Controller:
              (self.store.has_permission(authority, field, "delegate") or field == "all")) or
             self.principal == user)
         self._assert_success(
-            self.store.field_exists(field) and
+            (self.store.field_exists(field) or field == "all") and
             self.store.user_exists(user) and
             self.store.user_exists(authority) and
             is_field(field))
