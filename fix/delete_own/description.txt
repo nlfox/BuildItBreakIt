@@ -1,0 +1,1 @@
+In exploit 15break2 (31818), the attacker attempts to delete all delegtions to itself from admin as an unprivileged principal. This should be allowed since the delegations are to the principal, but our permission scheme denied it. By changing the perissions criteria, we fixed this issue.
