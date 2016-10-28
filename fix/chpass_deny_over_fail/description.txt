@@ -1,0 +1,1 @@
+In exploit break_946_cpd (26622), a non-admin principal attempts to change the password of a non-existent principal. Our code checked whether or not the principal had permission to make the change before it checked whether the other principal existed, so it returned failed instead of denied. By flipping the order of the checks, we fixed this behavior.
