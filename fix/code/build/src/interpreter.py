@@ -62,13 +62,14 @@ class Interpreter(object):
                 token = self.parser.expect("COMMENT", "PROG")
             self._auth()
             while self.flag:
-                n = self.parser.expect("COMMENT", "NEWLINE")
-                if n.type == "COMMENT":
-                    continue
-                token = self.parser.expect("COMMAND", "COMMENT")  # Checking for terminator not needed since return or exit is needed first
-                #try:
-                if token.type == "COMMAND":
-                    getattr(self, "_" + "_".join(token.value.split(" ")))()
+                token = self.parser.expect("COMMENT", "NEWLINE")
+                while token.type != "COMMAND":
+                    if token.type == "COMMENT":
+                        token = self.parser.expect("NEWLINE")
+                    elif token.type == "NEWLINE":
+                        token = self.parser.expect("COMMENT", "COMMAND")
+                    
+                getattr(self, "_" + "_".join(token.value.split(" ")))()
                 #except AttributeError:
                  #   print "_" + "_".join(token.value.split(" "))
                   #  raise NotImplementedError("Unknown command: " + token.value)
