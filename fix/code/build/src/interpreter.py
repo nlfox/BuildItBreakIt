@@ -56,14 +56,19 @@ class Interpreter(object):
         self.flag = True
         parser = self.parser.setNewData(data)
         try:
+            token = self.parser.expect("COMMENT", "PROG")
+            while token.type != "PROG":
+                token = self.parser.expect("NEWLINE")
+                token = self.parser.expect("COMMENT", "PROG")
             self._auth()
             while self.flag:
                 n = self.parser.expect("COMMENT", "NEWLINE")
                 if n.type == "COMMENT":
-                    self.parser.expect("NEWLINE")
-                token = self.parser.expect("COMMAND")  # Checking for terminator not needed since return or exit is needed first
+                    continue
+                token = self.parser.expect("COMMAND", "COMMENT")  # Checking for terminator not needed since return or exit is needed first
                 #try:
-                getattr(self, "_" + "_".join(token.value.split(" ")))()
+                if token.type == "COMMAND":
+                    getattr(self, "_" + "_".join(token.value.split(" ")))()
                 #except AttributeError:
                  #   print "_" + "_".join(token.value.split(" "))
                   #  raise NotImplementedError("Unknown command: " + token.value)
@@ -143,7 +148,6 @@ class Interpreter(object):
         return dictionary
 
     def _auth(self):
-        self.parser.expect("PROG")
         username = self.parser.expect("ID").value
         self.parser.expect("PASSWORD")
         password = self.parser.expect("STRING").value
@@ -237,8 +241,13 @@ class Interpreter(object):
 
     def _return(self):
         return_value = self._parse_expr()
-        self.parser.expect("NEWLINE")
-        self.parser.expect("TERMINATOR")
+        t = self.parser.expect("NEWLINE", "COMMENT")
+        if t.type == "COMMENT":
+            t = self.parser.expect("NEWLINE")
+        while t.type != "TERMINATOR":
+            t = self.parser.expect("COMMENT", "TERMINATOR")
+            if t.type == "COMMENT":
+                self.parser.expect("NEWLINE")
         self._execute_operations()
         value = self.controller.get_value(return_value)
         self.result.append('{"status":"RETURNING", "output":%s}' % (json.dumps(value)))
