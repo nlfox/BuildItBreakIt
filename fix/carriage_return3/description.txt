@@ -1,0 +1,3 @@
+In exploit 946_cd (28824), the attacker uses \n\r instead of \n in a program that should result in an authentication error. This doesn't conform to the grammar, so it should fail, but we implemented newline as \n or \n\r, so we let it pass. We changed the regular expression and now it works.
+
+We're not sure why this isn't getting through. Pardon all the commits.
