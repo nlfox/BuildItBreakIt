@@ -1,0 +1,5 @@
+This family of issues all rely on our bad parsing of the exit command. Most primitive commands require a space after the first word, so the regular expression reflected this. Unfortunately, we failed to take into account the different syntax of the exit command. By changing the regular expression, we've fixed the issue.
+
+Particularly, in exploit break171 (30998), the attacker uses the bad syntax parsing to ilicit a failure when exit is called by a non-admin user rather than admin. Since this should result in a denial instead, this counts as an exploit. By parsing the command correctly, the program makes it to our permission checker, which accurately denies the command.
+
+This fix has been updated to include correctness bugs in addition to exploits.
