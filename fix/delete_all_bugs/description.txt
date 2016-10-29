@@ -1,0 +1,4 @@
+In exploit 15break2 (31818), the attacker attempts to delete all delegtions to itself from admin as an unprivileged principal. This should be allowed since the delegations are to the principal, but our permission scheme denied it for two reasons. First, our code was denying users the privilege of deleting all delegations to themselves. Furthermore, the success check didn't account for the fact that the field might be all and so was throwing a field doesn't exist error. By changing the both of these perissions criteria, we fixed this class of issues.
+
+P.S.
+We squashed the commit for the last iteration of this fix with a new commit that addresses the failure condition since neither change alone actually fixes the issue. The previous fix commit was untested.
