@@ -87,8 +87,8 @@ class Lexer(object):
         return t
 
     def t_COMMENT(self, t):
-        r'\n?\/\/[A-Za-z0-9_\ ,;\.?!-]*'
-        pass
+        r'\/\/[A-Za-z0-9_\ ,;\.?!-]*'
+        return t
 
     def t_ID_GROUP(self, t):
         r'[a-zA-Z][a-zA-Z0-9_]*\.[a-zA-Z][a-zA-Z0-9_]*'

@@ -58,7 +58,9 @@ class Interpreter(object):
         try:
             self._auth()
             while self.flag:
-                self.parser.expect("NEWLINE")
+                n = self.parser.expect("COMMENT", "NEWLINE")
+                if n.type == "COMMENT":
+                    self.parser.expect("NEWLINE")
                 token = self.parser.expect("COMMAND")  # Checking for terminator not needed since return or exit is needed first
                 #try:
                 getattr(self, "_" + "_".join(token.value.split(" ")))()
